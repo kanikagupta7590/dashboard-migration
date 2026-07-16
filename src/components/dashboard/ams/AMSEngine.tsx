@@ -61,7 +61,7 @@ export function AMSEngine({ role, onBack }: { role: RoleConfig; onBack: () => vo
           search={search}
           onSearch={setSearch}
         />
-        <div className="min-w-0">
+        <div key={section} className="min-w-0 ams-section-enter">
           {renderSection(section, ctx, search)}
         </div>
       </div>
@@ -114,7 +114,7 @@ function AMSHeader({ ctx, pct, nextBandLabel }: { ctx: SectionCtx; pct: number; 
 
   return (
     <div
-      className="rounded-2xl border border-border p-5 md:p-6 relative overflow-hidden"
+      className="rounded-2xl border border-border p-5 md:p-6 relative overflow-hidden ams-header-in ams-shine"
       style={{ background: cfg.gradient }}
     >
       <div className="absolute inset-0 opacity-30 pointer-events-none"
@@ -146,7 +146,7 @@ function AMSHeader({ ctx, pct, nextBandLabel }: { ctx: SectionCtx; pct: number; 
               <span>Progress to {nextBandLabel}</span><span>{pct}%</span>
             </div>
             <div className="mt-1 h-2 rounded-full bg-white/15 overflow-hidden">
-              <div className="h-full bg-white/85" style={{ width: `${pct}%` }} />
+              <div className="h-full bg-white/85 ams-progress-fill" style={{ width: `${pct}%` }} />
             </div>
           </div>
         </div>
@@ -223,7 +223,7 @@ function NavRail({
                     disabled={disabled}
                     aria-current={active ? "page" : undefined}
                     className={cn(
-                      "w-full flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs text-left transition",
+                      "ams-nav-item w-full flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs text-left",
                       active ? "bg-brand/15 text-foreground" : "text-muted-foreground hover:text-foreground hover:bg-surface-2",
                       disabled && "opacity-40 cursor-not-allowed",
                     )}
