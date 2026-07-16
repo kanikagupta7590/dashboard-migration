@@ -562,7 +562,7 @@ function AchievementsSection({ ctx }: { ctx: SectionCtx }) {
           {earned.length > 0 && (
             <div>
               <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-2">Unlocked</div>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 ams-stagger">
                 {earned.map((a) => <ItemCard key={a.kind + a.key} item={a} earned />)}
               </div>
             </div>
@@ -570,7 +570,7 @@ function AchievementsSection({ ctx }: { ctx: SectionCtx }) {
           {upcoming.length > 0 && (
             <div>
               <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-2 mt-2">Locked</div>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 ams-stagger">
                 {upcoming.map((a) => <ItemCard key={a.kind + a.key} item={a} earned={false} />)}
               </div>
             </div>
@@ -631,7 +631,7 @@ function ItemGridSection({ ctx, kind }: { ctx: SectionCtx; kind: "awards" | "bad
         <EmptyState title={`No ${titleMap[kind].toLowerCase()} available yet`} message="Level up to reveal more."
           cta="View Missions" onCta={() => onGoto("missions")} />
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 ams-stagger">
           {visible.map((i) => (
             <ItemCard key={i.key} item={i} earned={earnedSet.includes(i.key)} />
           ))}
@@ -696,11 +696,11 @@ function CollectionsSection({ ctx }: { ctx: SectionCtx }) {
   ];
   return (
     <SectionShell title="Collections" subtitle="Everything you've collected as a ${cfg.subject}.">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 ams-stagger">
         {rows.map((r) => {
           const pct = r.total > 0 ? Math.round((r.have / r.total) * 100) : 0;
           return (
-            <button key={r.label} onClick={() => ctx.onGoto(r.to)} className="rounded-2xl border border-border bg-surface-1 p-4 text-left hover:bg-surface-2 transition">
+            <button key={r.label} onClick={() => ctx.onGoto(r.to)} className="rounded-2xl border border-border bg-surface-1 p-4 text-left ams-lift ams-press">
               <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{r.label}</div>
               <div className="mt-1 text-lg font-semibold">{r.have} <span className="text-muted-foreground text-sm">/ {r.total}</span></div>
               <div className="mt-2"><Progress value={pct} /></div>
