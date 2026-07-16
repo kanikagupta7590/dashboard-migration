@@ -309,7 +309,7 @@ function HomeSection({ ctx }: { ctx: SectionCtx }) {
 
   return (
     <SectionShell title="Home" subtitle={`Today · ${new Date().toLocaleDateString(undefined, { weekday: "long", month: "short", day: "numeric" })}`}>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 ams-stagger">
         <StatCard label="Today"   value="0 XP" hint="No activity yet" tone="brand" />
         <StatCard label="This Week"  value="0 XP" tone="cyan" />
         <StatCard label="This Month" value="0 XP" tone="violet" />
@@ -517,7 +517,7 @@ function IdentitySection({ ctx }: { ctx: SectionCtx }) {
   const { state, setState } = ctx;
   return (
     <SectionShell title="Identity" subtitle="Verification, trust and reputation scores.">
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 ams-stagger">
         <StatCard label="Passport ID" value={state.passportId} tone="brand" />
         <StatCard label="Trust Score" value={`${state.trustScore}/100`} tone="success" hint="Increases as you complete verified actions." />
         <StatCard label="Reputation" value={`${state.reputation}/100`} tone="cyan" hint="Feedback from your community." />
