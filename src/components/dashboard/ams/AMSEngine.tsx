@@ -285,7 +285,7 @@ function StatCard({ label, value, hint, tone = "brand" }: { label: string; value
     violet: "bg-[oklch(0.7_0.18_300)]/12 text-[oklch(0.7_0.18_300)]",
   };
   return (
-    <div className="rounded-xl border border-border bg-surface-1 p-3">
+    <div className="rounded-xl border border-border bg-surface-1 p-3 ams-lift ams-press">
       <div className={cn("h-7 w-7 rounded-lg flex items-center justify-center", toneCls[tone])}>
         <Sparkles className="h-3.5 w-3.5" />
       </div>
@@ -584,7 +584,7 @@ function AchievementsSection({ ctx }: { ctx: SectionCtx }) {
 function ItemCard({ item, earned }: { item: AmsItem & { kind?: string }; earned: boolean }) {
   return (
     <div className={cn(
-      "rounded-2xl border p-4 relative overflow-hidden transition",
+      "rounded-2xl border p-4 relative overflow-hidden ams-lift ams-press",
       earned ? "border-brand/40 bg-brand/5" : "border-border bg-surface-1",
     )}>
       {!earned && <div className="absolute inset-0 backdrop-blur-[2px] bg-surface-1/40 pointer-events-none" />}
