@@ -61,7 +61,7 @@ export function AMSEngine({ role, onBack }: { role: RoleConfig; onBack: () => vo
           search={search}
           onSearch={setSearch}
         />
-        <div className="min-w-0">
+        <div key={section} className="min-w-0 ams-section-enter">
           {renderSection(section, ctx, search)}
         </div>
       </div>
@@ -114,7 +114,7 @@ function AMSHeader({ ctx, pct, nextBandLabel }: { ctx: SectionCtx; pct: number; 
 
   return (
     <div
-      className="rounded-2xl border border-border p-5 md:p-6 relative overflow-hidden"
+      className="rounded-2xl border border-border p-5 md:p-6 relative overflow-hidden ams-header-in ams-shine"
       style={{ background: cfg.gradient }}
     >
       <div className="absolute inset-0 opacity-30 pointer-events-none"
@@ -146,7 +146,7 @@ function AMSHeader({ ctx, pct, nextBandLabel }: { ctx: SectionCtx; pct: number; 
               <span>Progress to {nextBandLabel}</span><span>{pct}%</span>
             </div>
             <div className="mt-1 h-2 rounded-full bg-white/15 overflow-hidden">
-              <div className="h-full bg-white/85" style={{ width: `${pct}%` }} />
+              <div className="h-full bg-white/85 ams-progress-fill" style={{ width: `${pct}%` }} />
             </div>
           </div>
         </div>
@@ -223,7 +223,7 @@ function NavRail({
                     disabled={disabled}
                     aria-current={active ? "page" : undefined}
                     className={cn(
-                      "w-full flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs text-left transition",
+                      "ams-nav-item w-full flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs text-left",
                       active ? "bg-brand/15 text-foreground" : "text-muted-foreground hover:text-foreground hover:bg-surface-2",
                       disabled && "opacity-40 cursor-not-allowed",
                     )}
@@ -285,7 +285,7 @@ function StatCard({ label, value, hint, tone = "brand" }: { label: string; value
     violet: "bg-[oklch(0.7_0.18_300)]/12 text-[oklch(0.7_0.18_300)]",
   };
   return (
-    <div className="rounded-xl border border-border bg-surface-1 p-3">
+    <div className="rounded-xl border border-border bg-surface-1 p-3 ams-lift ams-press">
       <div className={cn("h-7 w-7 rounded-lg flex items-center justify-center", toneCls[tone])}>
         <Sparkles className="h-3.5 w-3.5" />
       </div>
@@ -309,7 +309,7 @@ function HomeSection({ ctx }: { ctx: SectionCtx }) {
 
   return (
     <SectionShell title="Home" subtitle={`Today · ${new Date().toLocaleDateString(undefined, { weekday: "long", month: "short", day: "numeric" })}`}>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 ams-stagger">
         <StatCard label="Today"   value="0 XP" hint="No activity yet" tone="brand" />
         <StatCard label="This Week"  value="0 XP" tone="cyan" />
         <StatCard label="This Month" value="0 XP" tone="violet" />
@@ -517,7 +517,7 @@ function IdentitySection({ ctx }: { ctx: SectionCtx }) {
   const { state, setState } = ctx;
   return (
     <SectionShell title="Identity" subtitle="Verification, trust and reputation scores.">
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 ams-stagger">
         <StatCard label="Passport ID" value={state.passportId} tone="brand" />
         <StatCard label="Trust Score" value={`${state.trustScore}/100`} tone="success" hint="Increases as you complete verified actions." />
         <StatCard label="Reputation" value={`${state.reputation}/100`} tone="cyan" hint="Feedback from your community." />
@@ -562,7 +562,7 @@ function AchievementsSection({ ctx }: { ctx: SectionCtx }) {
           {earned.length > 0 && (
             <div>
               <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-2">Unlocked</div>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 ams-stagger">
                 {earned.map((a) => <ItemCard key={a.kind + a.key} item={a} earned />)}
               </div>
             </div>
@@ -570,7 +570,7 @@ function AchievementsSection({ ctx }: { ctx: SectionCtx }) {
           {upcoming.length > 0 && (
             <div>
               <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-2 mt-2">Locked</div>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 ams-stagger">
                 {upcoming.map((a) => <ItemCard key={a.kind + a.key} item={a} earned={false} />)}
               </div>
             </div>
@@ -584,7 +584,7 @@ function AchievementsSection({ ctx }: { ctx: SectionCtx }) {
 function ItemCard({ item, earned }: { item: AmsItem & { kind?: string }; earned: boolean }) {
   return (
     <div className={cn(
-      "rounded-2xl border p-4 relative overflow-hidden transition",
+      "rounded-2xl border p-4 relative overflow-hidden ams-lift ams-press",
       earned ? "border-brand/40 bg-brand/5" : "border-border bg-surface-1",
     )}>
       {!earned && <div className="absolute inset-0 backdrop-blur-[2px] bg-surface-1/40 pointer-events-none" />}
@@ -631,7 +631,7 @@ function ItemGridSection({ ctx, kind }: { ctx: SectionCtx; kind: "awards" | "bad
         <EmptyState title={`No ${titleMap[kind].toLowerCase()} available yet`} message="Level up to reveal more."
           cta="View Missions" onCta={() => onGoto("missions")} />
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 ams-stagger">
           {visible.map((i) => (
             <ItemCard key={i.key} item={i} earned={earnedSet.includes(i.key)} />
           ))}
@@ -696,11 +696,11 @@ function CollectionsSection({ ctx }: { ctx: SectionCtx }) {
   ];
   return (
     <SectionShell title="Collections" subtitle="Everything you've collected as a ${cfg.subject}.">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 ams-stagger">
         {rows.map((r) => {
           const pct = r.total > 0 ? Math.round((r.have / r.total) * 100) : 0;
           return (
-            <button key={r.label} onClick={() => ctx.onGoto(r.to)} className="rounded-2xl border border-border bg-surface-1 p-4 text-left hover:bg-surface-2 transition">
+            <button key={r.label} onClick={() => ctx.onGoto(r.to)} className="rounded-2xl border border-border bg-surface-1 p-4 text-left ams-lift ams-press">
               <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{r.label}</div>
               <div className="mt-1 text-lg font-semibold">{r.have} <span className="text-muted-foreground text-sm">/ {r.total}</span></div>
               <div className="mt-2"><Progress value={pct} /></div>
