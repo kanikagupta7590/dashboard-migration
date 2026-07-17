@@ -84,14 +84,42 @@ export function ResellerProfileHero({
   return (
     <section className="relative overflow-hidden rounded-3xl border border-border shadow-card bg-surface">
       <div
-        className="relative h-36 md:h-44 w-full overflow-hidden"
-        style={{
-          background: profile.bannerUrl
-            ? `center/cover no-repeat url(${profile.bannerUrl})`
-            : bannerBg,
-        }}
+        className="relative h-40 md:h-52 w-full overflow-hidden"
+        style={
+          profile.bannerUrl === defaultBannerAsset.url
+            ? {
+                // Professional composition: brand gradient + tiled checker watermark
+                backgroundColor: "oklch(0.32 0.16 260)",
+                backgroundImage: [
+                  "linear-gradient(115deg, oklch(0.22 0.14 260) 0%, oklch(0.32 0.18 258) 45%, oklch(0.48 0.22 25) 100%)",
+                  `url(${defaultBannerAsset.url})`,
+                ].join(", "),
+                backgroundSize: "cover, 96px 96px",
+                backgroundRepeat: "no-repeat, repeat",
+                backgroundBlendMode: "normal, soft-light",
+              }
+            : profile.bannerUrl
+              ? { background: `center/cover no-repeat url(${profile.bannerUrl})` }
+              : { background: bannerBg }
+        }
       >
-        <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/25 to-black/50" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/20 to-black/55" />
+        {profile.bannerUrl === defaultBannerAsset.url && (
+          <div className="absolute inset-0 flex items-center">
+            <div className="pl-6 md:pl-10 max-w-[70%]">
+              <div className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 backdrop-blur px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-white/90">
+                <span className="h-1.5 w-1.5 rounded-full bg-[oklch(0.7_0.22_25)]" />
+                Software Vala™
+              </div>
+              <h2 className="mt-2 text-white font-bold text-xl md:text-2xl tracking-tight drop-shadow-sm">
+                Bringing Ideas to Digital Life
+              </h2>
+              <p className="hidden md:block mt-1 text-[12px] text-white/75">
+                The Name of Trust · Enterprise Reseller & Partner Suite
+              </p>
+            </div>
+          </div>
+        )}
         <div className="absolute top-3 right-3 flex items-center gap-1.5">
           <button
             onClick={() => pickImage("bannerUrl")}

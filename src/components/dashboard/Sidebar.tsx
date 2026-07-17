@@ -1,6 +1,6 @@
 import { Home, Compass, Layers, FolderOpen, Settings, LifeBuoy, LogOut, Sparkles, Calculator } from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
-import logoAsset from "@/assets/softwarevala-logo.png.asset.json";
+import logoAsset from "@/assets/softwarevala-logo-round-v2.jpg.asset.json";
 import type { RoleConfig } from "@/lib/roles";
 import { signOut } from "@/lib/auth-bridge";
 import { cn } from "@/lib/utils";
@@ -24,9 +24,20 @@ export function Sidebar({ role, activeModule, onSelectModule }: Props) {
   return (
     <aside className="hidden lg:flex w-64 shrink-0 flex-col bg-sidebar text-sidebar-foreground border-r border-border">
       <div className="px-5 pt-5 pb-4 border-b border-border">
-        <img src={logoAsset.url} alt="Software Vala" className="h-9 w-auto object-contain" />
-        <div className="mt-2 text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
-          {role.title}
+        <div className="flex items-center gap-2.5">
+          <img
+            src={logoAsset.url}
+            alt="Software Vala"
+            className="h-10 w-10 rounded-full object-cover ring-2 ring-[oklch(0.45_0.2_260)]/60 shadow-sm"
+          />
+          <div className="min-w-0">
+            <div className="text-sm font-bold tracking-tight leading-tight truncate">
+              Software Vala<span className="text-[oklch(0.55_0.22_25)]">™</span>
+            </div>
+            <div className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground truncate">
+              {role.title}
+            </div>
+          </div>
         </div>
       </div>
 

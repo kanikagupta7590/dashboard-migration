@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import roundLogoAsset from "@/assets/softwarevala-logo-round.jpg.asset.json";
+import roundLogoAsset from "@/assets/softwarevala-logo-round-v2.jpg.asset.json";
 
 type Reward =
   | "gold"      // Gold Particle Rain
