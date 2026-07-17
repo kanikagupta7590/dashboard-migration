@@ -19,24 +19,39 @@ type ResellerProfile = {
   renewalScore: number | null;   // %
 };
 
-const EMPTY: ResellerProfile = {
-  name: "Your Reseller Account",
-  logoUrl: null,
-  bannerUrl: null,
-  verified: false,
-  membershipPlan: "—",
-  whiteLabelActive: false,
-  partnerTier: "—",
-  leaderboardRank: null,
-  salesTarget: null,
-  performance: null,
-  conversion: null,
-  renewalScore: null,
+type ProfileHeroProps = {
+  roleName?: string;      // e.g. "Reseller", "Author"
+  accountLabel?: string;  // e.g. "Your Reseller Account"
+  centerLabel?: string;   // e.g. "Reseller Center"
+  bannerGradient?: string;
 };
 
-export function ResellerProfileHero() {
+export function ResellerProfileHero({
+  roleName = "Reseller",
+  accountLabel,
+  centerLabel,
+  bannerGradient,
+}: ProfileHeroProps = {}) {
+  const EMPTY: ResellerProfile = {
+    name: accountLabel ?? `Your ${roleName} Account`,
+    logoUrl: null,
+    bannerUrl: null,
+    verified: false,
+    membershipPlan: "—",
+    whiteLabelActive: false,
+    partnerTier: "—",
+    leaderboardRank: null,
+    salesTarget: null,
+    performance: null,
+    conversion: null,
+    renewalScore: null,
+  };
   const [profile, setProfile] = useState<ResellerProfile>(EMPTY);
   const [editing, setEditing] = useState(false);
+  const defaultGradient =
+    "linear-gradient(120deg, oklch(0.26 0.06 175), oklch(0.32 0.16 160), oklch(0.42 0.22 150))";
+  const bannerBg = bannerGradient ?? defaultGradient;
+  const centerText = centerLabel ?? `${roleName} Center`;
 
   function pickImage(field: "logoUrl" | "bannerUrl") {
     const input = document.createElement("input");
@@ -57,7 +72,7 @@ export function ResellerProfileHero() {
         style={{
           background: profile.bannerUrl
             ? `center/cover no-repeat url(${profile.bannerUrl})`
-            : "linear-gradient(120deg, oklch(0.26 0.06 175), oklch(0.32 0.16 160), oklch(0.42 0.22 150))",
+            : bannerBg,
         }}
       >
         <div className="absolute inset-0 bg-black/30" />
@@ -122,7 +137,7 @@ export function ResellerProfileHero() {
               <Chip icon={Trophy}   label={profile.leaderboardRank == null ? "Rank · —" : `Rank · #${profile.leaderboardRank}`} tone="warning" title="Leaderboard Rank" />
             </div>
             <p className="mt-1 text-xs text-muted-foreground">
-              Reseller Center · Configure your profile, plan and white-label kit to start selling.
+              {centerText} · Configure your profile, plan and white-label kit to get started.
             </p>
           </div>
         </div>
