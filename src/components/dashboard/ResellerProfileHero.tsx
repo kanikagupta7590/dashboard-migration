@@ -1,8 +1,10 @@
 import { useState } from "react";
 import {
   Camera, ImageIcon, ShieldCheck, Pencil, Crown, Layers, Briefcase, Trophy,
-  Target as TargetIcon, Gauge, TrendingUp, RotateCcw, User,
+  Target as TargetIcon, Gauge, TrendingUp, RotateCcw, Trash2, Upload,
 } from "lucide-react";
+import defaultLogoAsset from "@/assets/softwarevala-logo-round-v2.jpg.asset.json";
+import defaultBannerAsset from "@/assets/softwarevala-banner-checker.jpg.asset.json";
 
 type ResellerProfile = {
   name: string;
@@ -34,8 +36,8 @@ export function ResellerProfileHero({
 }: ProfileHeroProps = {}) {
   const EMPTY: ResellerProfile = {
     name: accountLabel ?? `Your ${roleName} Account`,
-    logoUrl: null,
-    bannerUrl: null,
+    logoUrl: defaultLogoAsset.url,
+    bannerUrl: defaultBannerAsset.url,
     verified: false,
     membershipPlan: "—",
     whiteLabelActive: false,
@@ -48,6 +50,7 @@ export function ResellerProfileHero({
   };
   const [profile, setProfile] = useState<ResellerProfile>(EMPTY);
   const [editing, setEditing] = useState(false);
+  const [menuOpen, setMenuOpen] = useState<null | "logo" | "banner">(null);
   const defaultGradient =
     "linear-gradient(120deg, oklch(0.26 0.06 175), oklch(0.32 0.16 160), oklch(0.42 0.22 150))";
   const bannerBg = bannerGradient ?? defaultGradient;
@@ -65,6 +68,19 @@ export function ResellerProfileHero({
     input.click();
   }
 
+  function resetImage(field: "logoUrl" | "bannerUrl") {
+    setProfile((p) => ({
+      ...p,
+      [field]: field === "logoUrl" ? defaultLogoAsset.url : defaultBannerAsset.url,
+    }));
+    setMenuOpen(null);
+  }
+
+  function removeImage(field: "logoUrl" | "bannerUrl") {
+    setProfile((p) => ({ ...p, [field]: null }));
+    setMenuOpen(null);
+  }
+
   return (
     <section className="relative overflow-hidden rounded-3xl border border-border shadow-card bg-surface">
       <div
@@ -75,32 +91,83 @@ export function ResellerProfileHero({
             : bannerBg,
         }}
       >
-        <div className="absolute inset-0 bg-black/30" />
-        <button
-          onClick={() => pickImage("bannerUrl")}
-          className="absolute top-3 right-3 inline-flex items-center gap-1.5 rounded-lg bg-black/40 hover:bg-black/60 backdrop-blur border border-white/20 px-2.5 py-1.5 text-[11px] font-medium text-white transition"
-        >
-          <ImageIcon className="h-3.5 w-3.5" />
-          {profile.bannerUrl ? "Change banner" : "Upload banner"}
-        </button>
+        <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/25 to-black/50" />
+        <div className="absolute top-3 right-3 flex items-center gap-1.5">
+          <button
+            onClick={() => pickImage("bannerUrl")}
+            className="inline-flex items-center gap-1.5 rounded-lg bg-[oklch(0.55_0.22_25)]/90 hover:bg-[oklch(0.55_0.22_25)] backdrop-blur border border-white/30 px-2.5 py-1.5 text-[11px] font-semibold text-white shadow-md transition"
+            title="Upload banner"
+          >
+            <Upload className="h-3.5 w-3.5" />
+            {profile.bannerUrl ? "Change" : "Upload"}
+          </button>
+          {profile.bannerUrl && profile.bannerUrl !== defaultBannerAsset.url && (
+            <button
+              onClick={() => resetImage("bannerUrl")}
+              className="inline-flex items-center gap-1 rounded-lg bg-black/50 hover:bg-black/70 backdrop-blur border border-white/20 px-2 py-1.5 text-[11px] font-medium text-white transition"
+              title="Reset to default"
+            >
+              <RotateCcw className="h-3.5 w-3.5" />
+            </button>
+          )}
+          {profile.bannerUrl && (
+            <button
+              onClick={() => removeImage("bannerUrl")}
+              className="inline-flex items-center gap-1 rounded-lg bg-black/50 hover:bg-[oklch(0.55_0.22_25)]/80 backdrop-blur border border-white/20 px-2 py-1.5 text-[11px] font-medium text-white transition"
+              title="Remove banner"
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="relative px-5 md:px-8 pb-5 -mt-12">
         <div className="flex items-end gap-4">
-          <button
-            onClick={() => pickImage("logoUrl")}
-            className="relative h-24 w-24 shrink-0 rounded-2xl border-4 border-background bg-surface-2 overflow-hidden grid place-items-center shadow-card group"
-            title={profile.logoUrl ? "Change logo" : "Upload logo"}
-          >
-            {profile.logoUrl ? (
-              <img src={profile.logoUrl} alt="Reseller logo" className="h-full w-full object-cover" />
-            ) : (
-              <User className="h-8 w-8 text-muted-foreground" />
+          <div className="relative">
+            <button
+              onClick={() => setMenuOpen((m) => (m === "logo" ? null : "logo"))}
+              className="relative h-24 w-24 shrink-0 rounded-full border-4 border-background bg-white overflow-hidden grid place-items-center shadow-card ring-2 ring-[oklch(0.55_0.22_25)]/60 group"
+              title="Manage logo"
+            >
+              {profile.logoUrl ? (
+                <img src={profile.logoUrl} alt={`${roleName} logo`} className="h-full w-full object-cover" />
+              ) : (
+                <ImageIcon className="h-8 w-8 text-muted-foreground" />
+              )}
+              <span className="absolute inset-x-0 bottom-0 grid place-items-center bg-black/60 text-white text-[10px] py-0.5 opacity-0 group-hover:opacity-100 transition">
+                <Camera className="h-3 w-3" />
+              </span>
+            </button>
+            {menuOpen === "logo" && (
+              <div
+                className="absolute z-30 left-0 top-full mt-2 w-40 rounded-lg border border-border bg-popover shadow-lg overflow-hidden text-sm"
+                onMouseLeave={() => setMenuOpen(null)}
+              >
+                <button
+                  onClick={() => { pickImage("logoUrl"); setMenuOpen(null); }}
+                  className="w-full flex items-center gap-2 px-3 py-2 hover:bg-surface-2 text-left"
+                >
+                  <Upload className="h-3.5 w-3.5 text-[oklch(0.45_0.2_260)]" />
+                  Upload new
+                </button>
+                <button
+                  onClick={() => resetImage("logoUrl")}
+                  className="w-full flex items-center gap-2 px-3 py-2 hover:bg-surface-2 text-left"
+                >
+                  <RotateCcw className="h-3.5 w-3.5 text-muted-foreground" />
+                  Reset default
+                </button>
+                <button
+                  onClick={() => removeImage("logoUrl")}
+                  className="w-full flex items-center gap-2 px-3 py-2 hover:bg-[oklch(0.55_0.22_25)]/10 text-[oklch(0.55_0.22_25)] text-left"
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                  Remove
+                </button>
+              </div>
             )}
-            <span className="absolute inset-x-0 bottom-0 grid place-items-center bg-black/60 text-white text-[10px] py-0.5 opacity-0 group-hover:opacity-100 transition">
-              <Camera className="h-3 w-3" />
-            </span>
-          </button>
+          </div>
 
           <div className="min-w-0 flex-1 pb-1">
             <div className="flex items-center gap-2 flex-wrap">
