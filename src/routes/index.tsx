@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { getAuthenticatedRole, devSetRole, EXISTING_LOGIN_URL } from "@/lib/auth-bridge";
 import { ROLES, ROLE_ORDER, type RoleKey } from "@/lib/roles";
-import roundLogoAsset from "@/assets/softwarevala-logo-round.jpg.asset.json";
+import roundLogoAsset from "@/assets/softwarevala-logo-round-v2.jpg.asset.json";
 import { Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/")({
