@@ -16,6 +16,17 @@ import { AISuitePage } from "@/components/dashboard/AISuitePage";
 import { ResellerAISuitePage } from "@/components/dashboard/ResellerAISuitePage";
 import { ResellerPricingWorkspace } from "@/components/dashboard/ResellerPricingWorkspace";
 import { ROLES, isRoleKey, type RoleKey } from "@/lib/roles";
+
+const ROLE_BANNER_GRADIENTS: Record<RoleKey, string> = {
+  reseller:   "linear-gradient(120deg, oklch(0.26 0.06 175), oklch(0.32 0.16 160), oklch(0.42 0.22 150))",
+  author:     "linear-gradient(120deg, oklch(0.24 0.08 275), oklch(0.32 0.16 265), oklch(0.42 0.20 255))",
+  vendor:     "linear-gradient(120deg, oklch(0.24 0.06 210), oklch(0.32 0.14 200), oklch(0.42 0.18 195))",
+  affiliate:  "linear-gradient(120deg, oklch(0.24 0.08 310), oklch(0.32 0.16 300), oklch(0.42 0.20 295))",
+  influencer: "linear-gradient(120deg, oklch(0.26 0.08 350), oklch(0.34 0.18 350), oklch(0.44 0.20 20))",
+  franchise:  "linear-gradient(120deg, oklch(0.26 0.06 60),  oklch(0.34 0.14 65),  oklch(0.44 0.18 55))",
+  seo:        "linear-gradient(120deg, oklch(0.24 0.06 215), oklch(0.32 0.14 210), oklch(0.42 0.18 205))",
+  admin:      "linear-gradient(120deg, oklch(0.22 0.03 250), oklch(0.30 0.06 245), oklch(0.40 0.08 245))",
+};
 import { RESELLER_CENTER_ORDER, type CenterKey } from "@/lib/reseller-extras";
 
 export const Route = createFileRoute("/dashboard/$role")({
@@ -77,11 +88,14 @@ function DashboardPage() {
               : <ModulePage role={cfg} moduleKey={activeModule} onBack={() => setActiveModule(null)} />
           ) : (
             <>
+              <ResellerProfileHero
+                roleName={cfg.name}
+                accountLabel={`Your ${cfg.name} Account`}
+                centerLabel={`${cfg.name} Center`}
+                bannerGradient={ROLE_BANNER_GRADIENTS[role as RoleKey]}
+              />
               {role === "reseller" ? (
-                <>
-                  <ResellerProfileHero />
-                  <ResellerHero />
-                </>
+                <ResellerHero />
               ) : role === "vendor" ? (
                 <VendorHero role={cfg} />
               ) : (
