@@ -5,6 +5,7 @@ import { TopBar } from "@/components/dashboard/TopBar";
 import { Hero } from "@/components/dashboard/Hero";
 import { VendorHero } from "@/components/dashboard/VendorHero";
 import { ResellerHero } from "@/components/dashboard/ResellerHero";
+import { AuthorHero } from "@/components/dashboard/AuthorHero";
 import { ResellerProfileHero } from "@/components/dashboard/ResellerProfileHero";
 import { KpiGrid } from "@/components/dashboard/KpiGrid";
 import { ContentRows } from "@/components/dashboard/ContentRows";
@@ -98,6 +99,8 @@ function DashboardPage() {
                 <ResellerHero />
               ) : role === "vendor" ? (
                 <VendorHero role={cfg} />
+              ) : role === "author" ? (
+                <AuthorHero role={cfg} onCta={() => setActiveModule(cfg.modules[0]?.key ?? null)} />
               ) : (
                 <Hero role={cfg} onCta={() => setActiveModule(cfg.modules[0]?.key ?? null)} onAnalytics={() => setActiveModule(cfg.modules.find(m => /analytic|report|insight/i.test(m.label))?.key ?? cfg.modules[0]?.key ?? null)} />
               )}
