@@ -6,7 +6,7 @@ type Slide = {
   eyebrow: string;
   title: string;
   sub: string;
-  icon: React.ComponentType<{ className?: string }>;
+  icon: React.ComponentType<{ className?: string; style?: React.CSSProperties }>;
   gradient: string;
   accent: string;
 };
