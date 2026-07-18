@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { ChevronLeft, ChevronRight, BookOpen, Sparkles, TrendingUp, Award, Users } from "lucide-react";
+import { ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
 import type { RoleConfig } from "@/lib/roles";
 
-type Slide = {
+export type HeroSlide = {
   eyebrow: string;
   title: string;
   sub: string;
@@ -11,7 +11,9 @@ type Slide = {
   accent: string;
 };
 
-const SLIDES: Slide[] = [
+import { BookOpen, TrendingUp, Award, Users } from "lucide-react";
+
+const AUTHOR_SLIDES: HeroSlide[] = [
   {
     eyebrow: "Author Studio",
     title: "Publish your next bestseller",
@@ -47,6 +49,19 @@ const SLIDES: Slide[] = [
 ];
 
 export function AuthorHero({ role, onCta }: { role: RoleConfig; onCta?: () => void }) {
+  return <SlidingHero role={role} onCta={onCta} slides={AUTHOR_SLIDES} />;
+}
+
+export function SlidingHero({
+  role,
+  onCta,
+  slides,
+}: {
+  role: RoleConfig;
+  onCta?: () => void;
+  slides: HeroSlide[];
+}) {
+  const SLIDES = slides;
   const [i, setI] = useState(0);
   const [paused, setPaused] = useState(false);
 
