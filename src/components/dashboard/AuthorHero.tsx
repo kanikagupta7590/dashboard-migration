@@ -80,7 +80,7 @@ export function SlidingHero({
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
-      <div className="relative h-56 md:h-64" style={{ background: s.gradient, transition: "background 700ms ease" }}>
+      <div className="relative min-h-[340px] md:min-h-[380px]" style={{ background: s.gradient, transition: "background 700ms ease" }}>
         <div
           className="absolute inset-0 opacity-60 pointer-events-none"
           style={{
