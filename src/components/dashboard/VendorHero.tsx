@@ -1,4 +1,4 @@
-import { Camera, ImageIcon, Star, ShieldCheck, Heart, Truck, Gauge, MessageCircle, Clock, Package, Pencil, ExternalLink, Share2, Link2, Check } from "lucide-react";
+import { Camera, Star, ShieldCheck, Heart, Truck, Gauge, MessageCircle, Clock, Package, Pencil, ExternalLink, Share2, Link2, Check } from "lucide-react";
 import { useState } from "react";
 import type { RoleConfig } from "@/lib/roles";
 
