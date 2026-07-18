@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Sidebar } from "@/components/dashboard/Sidebar";
 import { TopBar } from "@/components/dashboard/TopBar";
 import { Hero } from "@/components/dashboard/Hero";
-import { VendorHero } from "@/components/dashboard/VendorHero";
+import { VendorSliderHero } from "@/components/dashboard/VendorSliderHero";
 import { ResellerHero } from "@/components/dashboard/ResellerHero";
 import { AuthorHero } from "@/components/dashboard/AuthorHero";
 import { ResellerProfileHero } from "@/components/dashboard/ResellerProfileHero";
@@ -98,7 +98,7 @@ function DashboardPage() {
               {role === "reseller" ? (
                 <ResellerHero />
               ) : role === "vendor" ? (
-                <VendorHero role={cfg} />
+                <VendorSliderHero role={cfg} onCta={() => setActiveModule(cfg.modules[0]?.key ?? null)} />
               ) : role === "author" ? (
                 <AuthorHero role={cfg} onCta={() => setActiveModule(cfg.modules[0]?.key ?? null)} />
               ) : (
