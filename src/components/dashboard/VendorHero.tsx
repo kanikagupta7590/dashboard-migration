@@ -49,27 +49,8 @@ export function VendorHero({ role }: { role: RoleConfig }) {
 
   return (
     <section className="relative overflow-hidden rounded-3xl border border-border shadow-card bg-surface">
-      {/* Banner */}
-      <div
-        className="relative h-40 md:h-52 w-full overflow-hidden"
-        style={{
-          background: profile.bannerUrl
-            ? `center/cover no-repeat url(${profile.bannerUrl})`
-            : role.banner.gradient,
-        }}
-      >
-        <div className="absolute inset-0 bg-black/30" />
-        <button
-          onClick={() => pickImage("bannerUrl")}
-          className="absolute top-3 right-3 inline-flex items-center gap-1.5 rounded-lg bg-black/40 hover:bg-black/60 backdrop-blur border border-white/20 px-2.5 py-1.5 text-[11px] font-medium text-white transition"
-        >
-          <ImageIcon className="h-3.5 w-3.5" />
-          {profile.bannerUrl ? "Change banner" : "Upload banner"}
-        </button>
-      </div>
-
-      {/* Identity strip */}
-      <div className="relative px-5 md:px-8 pb-5 -mt-12">
+      {/* Identity strip (banner is provided by the shared profile hero above) */}
+      <div className="relative px-5 md:px-8 py-5">
         <div className="flex items-end gap-4">
           {/* Logo */}
           <button
