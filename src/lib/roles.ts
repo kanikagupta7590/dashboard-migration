@@ -8,6 +8,9 @@ import {
   PieChart, FileText, Wrench, Brain, Repeat, AlertTriangle,
   ClipboardList, Truck, Layers, MapPin, Settings as SettingsIcon,
   Hourglass, PackageCheck, Award, LifeBuoy,
+  Code2, Bug, Timer, GitBranch, ShieldAlert, FileSignature,
+  ScrollText, ClipboardCheck, Gavel, Handshake, ListChecks,
+  BadgeCheck, ClipboardX, CheckCircle2, Flame, MessageSquare,
   type LucideIcon,
 } from "lucide-react";
 
@@ -18,7 +21,8 @@ const AMSC = { key: "ams-center",   label: "AMS Center",   icon: Sparkles };
 
 export type RoleKey =
   | "author" | "vendor" | "reseller" | "affiliate"
-  | "influencer" | "franchise" | "seo" | "admin";
+  | "influencer" | "franchise" | "seo" | "admin"
+  | "developer" | "dev-manager" | "promise-tracker";
 
 export type Kpi = {
   key: string;
@@ -113,6 +117,30 @@ const banners: Record<RoleKey, RoleBanner> = {
     cta: "Open Console",
     gradient: "linear-gradient(120deg, oklch(0.2 0.03 270) 0%, oklch(0.26 0.08 0) 55%, oklch(0.36 0.18 25) 100%)",
     accent: "oklch(0.78 0.2 25)",
+  },
+  developer: {
+    eyebrow: "Developer Workspace",
+    headline: "Ship code. Earn XP.",
+    sub: "Tasks, bugs, code review, timers & performance — one command center.",
+    cta: "Open Command Center",
+    gradient: "linear-gradient(120deg, oklch(0.24 0.05 260) 0%, oklch(0.30 0.14 250) 55%, oklch(0.40 0.18 230) 100%)",
+    accent: "oklch(0.78 0.16 250)",
+  },
+  "dev-manager": {
+    eyebrow: "Developer Management",
+    headline: "Orchestrate every sprint.",
+    sub: "Registry, tasks, QA, incentives, compliance & security.",
+    cta: "Assign Task",
+    gradient: "linear-gradient(120deg, oklch(0.24 0.06 220) 0%, oklch(0.30 0.14 210) 55%, oklch(0.40 0.18 195) 100%)",
+    accent: "oklch(0.80 0.16 200)",
+  },
+  "promise-tracker": {
+    eyebrow: "Promise Center",
+    headline: "Every promise, kept on time.",
+    sub: "Track, categorize & enforce commitments across teams.",
+    cta: "Create Promise",
+    gradient: "linear-gradient(120deg, oklch(0.24 0.06 320) 0%, oklch(0.30 0.14 330) 55%, oklch(0.40 0.20 350) 100%)",
+    accent: "oklch(0.80 0.18 340)",
   },
 };
 
@@ -339,9 +367,117 @@ export const ROLES: Record<RoleKey, RoleConfig> = {
     ],
     banner: banners.admin,
   },
+  developer: {
+    key:"developer", name:"Developer", title:"Developer Dashboard",
+    tagline:"Command center for shipping code",
+    benchmarks:["Linear Dev", "GitHub Projects"],
+    modules:[
+      { key:"command-center", label:"Command Center", icon:Sparkles },
+      { key:"tasks", label:"Tasks", icon:ClipboardList },
+      { key:"bugs", label:"Bugs & Issues", icon:Bug },
+      { key:"code-submission", label:"Code Submission", icon:Code2 },
+      { key:"timer", label:"Timer & Productivity", icon:Timer },
+      { key:"ai", label:"AI Assistant", icon:Brain },
+      { key:"performance", label:"Performance", icon:BarChart3 },
+      { key:"wallet", label:"Wallet & Payout", icon:Wallet },
+      { key:"chat", label:"Team Chat", icon:MessageSquare },
+      { key:"settings", label:"Settings", icon:SettingsIcon },
+      ACHV, AMS, AMSC,
+    ],
+    kpis:[
+      { key:"tasks-open", label:"Open Tasks", icon:ClipboardList, tone:"brand" },
+      { key:"tasks-done", label:"Tasks Completed", icon:CheckCircle2, tone:"success" },
+      { key:"bugs-open", label:"Open Bugs", icon:Bug, tone:"danger" },
+      { key:"commits", label:"Commits This Week", icon:GitBranch, tone:"cyan" },
+      { key:"code-hours", label:"Coding Hours", icon:Timer, tone:"warning" },
+      { key:"performance", label:"Performance Score", icon:BarChart3, tone:"violet", unit:"%" },
+      { key:"payout", label:"Payout Pending", icon:Wallet, tone:"warning", unit:"$" },
+      { key:"streak", label:"Ship Streak", icon:Flame, tone:"warning" },
+    ],
+    banner: banners.developer,
+  },
+  "dev-manager": {
+    key:"dev-manager", name:"Dev Manager", title:"Developer Management Dashboard",
+    tagline:"Registry, sprints, QA, incentives & compliance",
+    benchmarks:["Jira Advanced Roadmaps","Azure DevOps"],
+    modules:[
+      { key:"overview", label:"Developer Dashboard", icon:BarChart3 },
+      { key:"registry", label:"Developer Registry", icon:Users2 },
+      { key:"onboarding", label:"Onboarding Requests", icon:UserPlus },
+      { key:"roles", label:"Role & Skill Mapping", icon:Layers },
+      { key:"tasks", label:"Task Management", icon:ClipboardList },
+      { key:"sprint", label:"Sprint / Milestone", icon:Target },
+      { key:"builds", label:"Build Assignment", icon:GitBranch },
+      { key:"code-submission", label:"Code Submission", icon:Code2 },
+      { key:"qa", label:"Review & QA", icon:ClipboardCheck },
+      { key:"bugs", label:"Bug & Fix Tracker", icon:Bug },
+      { key:"performance", label:"Performance & KPI", icon:BarChart3 },
+      { key:"payments", label:"Payment & Incentive", icon:Wallet },
+      { key:"compliance", label:"Compliance & NDA", icon:FileSignature },
+      { key:"security", label:"Security & Access", icon:ShieldCheck },
+      { key:"alerts", label:"Alerts & Escalation", icon:ShieldAlert },
+      { key:"audit", label:"Audit Logs", icon:ScrollText },
+      { key:"ai", label:"AI Suite", icon:Brain },
+      { key:"reports", label:"Reports", icon:FileText },
+      { key:"settings", label:"Settings", icon:SettingsIcon },
+      ACHV, AMS, AMSC,
+    ],
+    kpis:[
+      { key:"developers", label:"Active Developers", icon:Users2, tone:"brand" },
+      { key:"onboarding", label:"Onboarding Requests", icon:UserPlus, tone:"cyan" },
+      { key:"tasks", label:"Tasks In-Flight", icon:ClipboardList, tone:"violet" },
+      { key:"sprint", label:"Sprint Progress", icon:Target, tone:"warning", unit:"%" },
+      { key:"qa-pending", label:"QA Pending", icon:ClipboardCheck, tone:"warning" },
+      { key:"bugs", label:"Open Bugs", icon:Bug, tone:"danger" },
+      { key:"performance", label:"Team Performance", icon:BarChart3, tone:"success", unit:"%" },
+      { key:"payout", label:"Payouts This Month", icon:Wallet, tone:"success", unit:"$" },
+      { key:"compliance", label:"Compliance", icon:FileSignature, tone:"cyan", unit:"%" },
+      { key:"escalations", label:"Escalations", icon:ShieldAlert, tone:"danger" },
+    ],
+    banner: banners["dev-manager"],
+  },
+  "promise-tracker": {
+    key:"promise-tracker", name:"Promise Tracker", title:"Promise Tracker Dashboard",
+    tagline:"Track, enforce & fulfill every commitment",
+    benchmarks:["ServiceNow SLA","Zendesk Guarantees"],
+    modules:[
+      { key:"overview", label:"Overview", icon:BarChart3 },
+      { key:"all", label:"All Promises", icon:ListChecks },
+      { key:"create", label:"Create Promise", icon:FileSignature },
+      { key:"categories", label:"Promise Categories", icon:Layers },
+      { key:"sales", label:"Sales", icon:ShoppingCart },
+      { key:"support", label:"Support", icon:LifeBuoy },
+      { key:"delivery", label:"Delivery", icon:Truck },
+      { key:"payment", label:"Payment", icon:Wallet },
+      { key:"legal", label:"Legal", icon:Gavel },
+      { key:"partnership", label:"Partnership", icon:Handshake },
+      { key:"sla", label:"SLA", icon:BadgeCheck },
+      { key:"active", label:"Active Promises", icon:CheckCircle2 },
+      { key:"delayed", label:"Delayed Promises", icon:Hourglass },
+      { key:"broken", label:"Broken Promises", icon:ClipboardX },
+      { key:"fulfilled", label:"Fulfilled Promises", icon:PackageCheck },
+      { key:"escalations", label:"Escalations", icon:ShieldAlert },
+      { key:"fine-tip", label:"Fine & Tip Rules", icon:AlertTriangle },
+      { key:"ai", label:"AI Insights", icon:Brain },
+      { key:"audit", label:"Audit Logs", icon:ScrollText },
+      { key:"settings", label:"Settings", icon:SettingsIcon },
+      ACHV, AMS, AMSC,
+    ],
+    kpis:[
+      { key:"active", label:"Active Promises", icon:CheckCircle2, tone:"brand" },
+      { key:"fulfilled", label:"Fulfilled", icon:PackageCheck, tone:"success" },
+      { key:"delayed", label:"Delayed", icon:Hourglass, tone:"warning" },
+      { key:"broken", label:"Broken", icon:ClipboardX, tone:"danger" },
+      { key:"escalations", label:"Escalations", icon:ShieldAlert, tone:"danger" },
+      { key:"sla", label:"SLA Compliance", icon:BadgeCheck, tone:"success", unit:"%" },
+      { key:"fines", label:"Fines Collected", icon:AlertTriangle, tone:"warning", unit:"$" },
+      { key:"tips", label:"Tips Awarded", icon:Wallet, tone:"cyan", unit:"$" },
+    ],
+    banner: banners["promise-tracker"],
+  },
 };
 
-export const ROLE_ORDER: RoleKey[] = ["author","vendor","reseller","affiliate","influencer","franchise","seo","admin"];
+export const ROLE_ORDER: RoleKey[] = ["author","vendor","reseller","affiliate","influencer","franchise","seo","admin","developer","dev-manager","promise-tracker"];
 
 export function isRoleKey(s: string | undefined | null): s is RoleKey {
   return !!s && (ROLE_ORDER as string[]).includes(s);
