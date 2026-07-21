@@ -392,8 +392,111 @@ const admin: AmsRoleConfig = {
   gradient: "linear-gradient(120deg, oklch(0.2 0.03 270) 0%, oklch(0.26 0.08 0) 55%, oklch(0.36 0.18 25) 100%)",
 };
 
+const developer: AmsRoleConfig = {
+  eyebrow: "Developer Journey",
+  headline: "Developer Achievement Passport",
+  subject: "Developer",
+  language: { performer: "Developer", action: "ship", audience: "team", domain: "Engineering" },
+  awards: [
+    { key:"first-commit",  label:"First Commit",   requirement:"Merge 1 PR",           xp:80 },
+    { key:"bug-hunter",    label:"Bug Hunter",     requirement:"Close 50 bugs",        xp:400, visibleAtLevel:3 },
+    { key:"ship-master",   label:"Ship Master",    requirement:"Ship 100 tasks",       xp:600, visibleAtLevel:4 },
+  ],
+  badges: [
+    { key:"verified-dev",  label:"Verified Developer", requirement:"Complete profile",   xp:50 },
+    { key:"clean-code",    label:"Clean Code",         requirement:"Zero-defect sprint", xp:120, visibleAtLevel:2 },
+  ],
+  trophies: [
+    { key:"dev-bronze", label:"Bronze Coder", requirement:"Reach Level 2", xp:150 },
+    { key:"dev-silver", label:"Silver Coder", requirement:"Reach Level 4", xp:400, visibleAtLevel:3 },
+    { key:"dev-gold",   label:"Gold Coder",   requirement:"Reach Level 6", xp:900, visibleAtLevel:5 },
+  ],
+  certificates: [
+    { key:"certified-dev", label:"Certified Developer", requirement:"Verified profile", xp:0 },
+  ],
+  missions: [
+    { key:"daily-ship",    label:"Daily Ship",   detail:"Merge 1 PR today.",              cadence:"daily",   xp:20 },
+    { key:"weekly-review", label:"Peer Review",  detail:"Review 5 PRs this week.",        cadence:"weekly",  xp:60 },
+    { key:"monthly-bug",   label:"Bug Sweep",    detail:"Close 20 bugs this month.",      cadence:"monthly", xp:150 },
+  ],
+  journey: [
+    { key:"onboard",  label:"Onboarding", atLevel:1, detail:"Dev environment ready." },
+    { key:"shipping", label:"Shipping",   atLevel:2, detail:"Regular PR cadence." },
+    { key:"leading",  label:"Leading",    atLevel:5, detail:"Mentoring, owning modules." },
+  ],
+  accent: "oklch(0.78 0.16 250)",
+  gradient: "linear-gradient(120deg, oklch(0.24 0.05 260) 0%, oklch(0.30 0.14 250) 55%, oklch(0.40 0.18 230) 100%)",
+};
+
+const devManager: AmsRoleConfig = {
+  eyebrow: "Dev Manager Journey",
+  headline: "Manager Achievement Passport",
+  subject: "Manager",
+  language: { performer: "Manager", action: "orchestrate", audience: "engineering org", domain: "Delivery" },
+  awards: [
+    { key:"first-sprint",  label:"First Sprint Shipped", requirement:"Deliver 1 sprint on time", xp:120 },
+    { key:"team-builder",  label:"Team Builder",         requirement:"Onboard 10 developers",     xp:400, visibleAtLevel:3 },
+  ],
+  badges: [
+    { key:"verified-mgr",  label:"Verified Manager", requirement:"Verified account",   xp:50 },
+    { key:"zero-esc",      label:"Zero Escalations", requirement:"Sprint with no escalations", xp:120, visibleAtLevel:2 },
+  ],
+  trophies: [
+    { key:"mgr-bronze", label:"Bronze Manager", requirement:"Reach Level 2", xp:150 },
+    { key:"mgr-silver", label:"Silver Manager", requirement:"Reach Level 4", xp:400, visibleAtLevel:3 },
+  ],
+  certificates: [
+    { key:"delivery-lead", label:"Delivery Lead Certificate", requirement:"Verified profile", xp:0 },
+  ],
+  missions: [
+    { key:"daily-standup", label:"Daily Standup", detail:"Run standup and update board.", cadence:"daily",  xp:20 },
+    { key:"weekly-review", label:"Sprint Review", detail:"Close weekly review with team.", cadence:"weekly", xp:80 },
+  ],
+  journey: [
+    { key:"forming",  label:"Forming",  atLevel:1, detail:"Team onboarding." },
+    { key:"delivering", label:"Delivering", atLevel:3, detail:"Predictable sprints." },
+    { key:"scaling",  label:"Scaling",  atLevel:5, detail:"Multi-squad orchestration." },
+  ],
+  accent: "oklch(0.80 0.16 200)",
+  gradient: "linear-gradient(120deg, oklch(0.24 0.06 220) 0%, oklch(0.30 0.14 210) 55%, oklch(0.40 0.18 195) 100%)",
+};
+
+const promiseTracker: AmsRoleConfig = {
+  eyebrow: "Promise Journey",
+  headline: "Promise Keeper Passport",
+  subject: "Promise Keeper",
+  language: { performer: "Keeper", action: "fulfill", audience: "stakeholders", domain: "Commitments" },
+  awards: [
+    { key:"first-kept",   label:"First Promise Kept", requirement:"Fulfill 1 promise",      xp:80 },
+    { key:"streak-100",   label:"100-Streak",         requirement:"100 promises on time",   xp:500, visibleAtLevel:4 },
+  ],
+  badges: [
+    { key:"verified-keeper", label:"Verified Keeper", requirement:"Verified account", xp:50 },
+    { key:"no-broken",       label:"Zero Broken",     requirement:"No broken promises in 30 days", xp:150, visibleAtLevel:2 },
+  ],
+  trophies: [
+    { key:"pt-bronze", label:"Bronze Keeper", requirement:"Reach Level 2", xp:150 },
+    { key:"pt-silver", label:"Silver Keeper", requirement:"Reach Level 4", xp:400, visibleAtLevel:3 },
+  ],
+  certificates: [
+    { key:"sla-champion", label:"SLA Champion Certificate", requirement:"Verified profile", xp:0 },
+  ],
+  missions: [
+    { key:"daily-check", label:"Daily Check-In", detail:"Review active promises today.",    cadence:"daily",   xp:20 },
+    { key:"weekly-close",label:"Weekly Closeout",detail:"Close 10 fulfilled promises.",     cadence:"weekly",  xp:80 },
+  ],
+  journey: [
+    { key:"pledge",   label:"Pledge",   atLevel:1, detail:"First promises registered." },
+    { key:"tracking", label:"Tracking", atLevel:2, detail:"Active SLA discipline." },
+    { key:"champion", label:"Champion", atLevel:5, detail:"Recognised promise keeper." },
+  ],
+  accent: "oklch(0.80 0.18 340)",
+  gradient: "linear-gradient(120deg, oklch(0.24 0.06 320) 0%, oklch(0.30 0.14 330) 55%, oklch(0.40 0.20 350) 100%)",
+};
+
 export const AMS_ROLE: Record<RoleKey, AmsRoleConfig> = {
   author, reseller, vendor, affiliate, influencer, franchise, seo, admin,
+  developer, "dev-manager": devManager, "promise-tracker": promiseTracker,
 };
 
 export type AmsUserState = {
