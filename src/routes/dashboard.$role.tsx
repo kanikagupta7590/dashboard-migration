@@ -27,6 +27,9 @@ const ROLE_BANNER_GRADIENTS: Record<RoleKey, string> = {
   franchise:  "linear-gradient(120deg, oklch(0.26 0.06 60),  oklch(0.34 0.14 65),  oklch(0.44 0.18 55))",
   seo:        "linear-gradient(120deg, oklch(0.24 0.06 215), oklch(0.32 0.14 210), oklch(0.42 0.18 205))",
   admin:      "linear-gradient(120deg, oklch(0.22 0.03 250), oklch(0.30 0.06 245), oklch(0.40 0.08 245))",
+  developer:        "linear-gradient(120deg, oklch(0.24 0.05 260), oklch(0.32 0.14 250), oklch(0.42 0.18 235))",
+  "dev-manager":    "linear-gradient(120deg, oklch(0.24 0.06 220), oklch(0.32 0.14 210), oklch(0.42 0.18 195))",
+  "promise-tracker":"linear-gradient(120deg, oklch(0.26 0.06 325), oklch(0.34 0.16 335), oklch(0.44 0.20 350))",
 };
 import { RESELLER_CENTER_ORDER, type CenterKey } from "@/lib/reseller-extras";
 
