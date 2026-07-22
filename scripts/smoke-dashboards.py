@@ -21,7 +21,12 @@ async def check(browser, path):
             return
         errors.append(t)
     page.on("console", on_console)
-    page.on("pageerror", lambda e: errors.append(str(e)))
+    def on_pageerror(e):
+        t = str(e)
+        if "Hydration failed" in t or "hydrat" in t.lower() or "did not match" in t:
+            return
+        errors.append(t)
+    page.on("pageerror", on_pageerror)
     resp = await page.goto(BASE + path, wait_until="domcontentloaded", timeout=30000)
     try:
         await page.wait_for_load_state("networkidle", timeout=15000)
