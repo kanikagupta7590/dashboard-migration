@@ -1,5 +1,5 @@
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Sidebar } from "@/components/dashboard/Sidebar";
 import { TopBar } from "@/components/dashboard/TopBar";
 import { Hero } from "@/components/dashboard/Hero";
@@ -16,6 +16,9 @@ import { AIChatWorkspace } from "@/components/dashboard/AIChatWorkspace";
 import { AISuitePage } from "@/components/dashboard/AISuitePage";
 import { ResellerAISuitePage } from "@/components/dashboard/ResellerAISuitePage";
 import { ResellerPricingWorkspace } from "@/components/dashboard/ResellerPricingWorkspace";
+import { Breadcrumbs } from "@/components/dashboard/Breadcrumbs";
+import { KpiToolbar, type KpiSort, type KpiTone } from "@/components/dashboard/KpiToolbar";
+import { ModuleBoundary } from "@/components/dashboard/ModuleBoundary";
 import { ROLES, isRoleKey, type RoleKey } from "@/lib/roles";
 
 const ROLE_BANNER_GRADIENTS: Record<RoleKey, string> = {
@@ -56,6 +59,8 @@ function DashboardPage() {
   const navigate = useNavigate();
   const [activeModule, setActiveModule] = useState<string | null>(null);
   const cfg = ROLES[role as RoleKey];
+  const [kpiTone, setKpiTone] = useState<KpiTone>("all");
+  const [kpiSort, setKpiSort] = useState<KpiSort>("default");
 
   function switchRole(next: RoleKey) {
     setActiveModule(null);
@@ -70,26 +75,57 @@ function DashboardPage() {
   const isCenter =
     centerMatch && (RESELLER_CENTER_ORDER as readonly string[]).includes(centerMatch);
 
+  const availableTones = useMemo<KpiTone[]>(() => {
+    const set = new Set<KpiTone>(cfg.kpis.map((k) => k.tone));
+    return ["all", ...Array.from(set)];
+  }, [cfg.kpis]);
+
+  const filteredKpis = useMemo(() => {
+    let list = kpiTone === "all" ? cfg.kpis : cfg.kpis.filter((k) => k.tone === kpiTone);
+    switch (kpiSort) {
+      case "label_asc":  list = [...list].sort((a, b) => a.label.localeCompare(b.label)); break;
+      case "label_desc": list = [...list].sort((a, b) => b.label.localeCompare(a.label)); break;
+      case "tone":       list = [...list].sort((a, b) => a.tone.localeCompare(b.tone)); break;
+      default: break;
+    }
+    return list;
+  }, [cfg.kpis, kpiTone, kpiSort]);
+
+  const activeLabel = (() => {
+    if (isAIChat) return "AI Chat";
+    if (isPricing) return "Pricing Engine";
+    if (isCenter) return `${centerMatch} Center`;
+    if (activeModule) return cfg.modules.find((m) => m.key === activeModule)?.label ?? activeModule;
+    return null;
+  })();
+
+  const crumbs = activeLabel
+    ? [{ label: "Home", onClick: () => setActiveModule(null) }, { label: cfg.name, onClick: () => setActiveModule(null) }, { label: activeLabel }]
+    : [{ label: "Home" }, { label: cfg.name }];
+
   return (
     <div className="min-h-screen flex bg-background text-foreground">
       <Sidebar role={cfg} activeModule={activeModule} onSelectModule={setActiveModule} />
       <div className="flex-1 min-w-0 flex flex-col">
         <TopBar role={cfg} onSwitchRole={switchRole} onOpenAIChat={() => setActiveModule("ai-chat")} onOpenModule={(k) => setActiveModule(k)} />
         <main className="flex-1 px-4 md:px-6 py-5 space-y-5 overflow-x-hidden">
+          <Breadcrumbs items={crumbs} />
           {isAIChat ? (
-            <AIChatWorkspace onBack={() => setActiveModule(null)} />
+            <ModuleBoundary onReset={() => setActiveModule(null)}><AIChatWorkspace onBack={() => setActiveModule(null)} /></ModuleBoundary>
           ) : isPricing ? (
-            <ResellerPricingWorkspace onBack={() => setActiveModule(null)} />
+            <ModuleBoundary onReset={() => setActiveModule(null)}><ResellerPricingWorkspace onBack={() => setActiveModule(null)} /></ModuleBoundary>
           ) : isCenter && role === "reseller" ? (
-            <ResellerCenterPage centerKey={centerMatch as CenterKey} onBack={() => setActiveModule(null)} />
+            <ModuleBoundary onReset={() => setActiveModule(null)}><ResellerCenterPage centerKey={centerMatch as CenterKey} onBack={() => setActiveModule(null)} /></ModuleBoundary>
           ) : activeModule === "ai" && role === "vendor" ? (
-            <AISuitePage onBack={() => setActiveModule(null)} />
+            <ModuleBoundary onReset={() => setActiveModule(null)}><AISuitePage onBack={() => setActiveModule(null)} /></ModuleBoundary>
           ) : activeModule === "ai" && role === "reseller" ? (
-            <ResellerAISuitePage onBack={() => setActiveModule(null)} />
+            <ModuleBoundary onReset={() => setActiveModule(null)}><ResellerAISuitePage onBack={() => setActiveModule(null)} /></ModuleBoundary>
           ) : activeModule ? (
-            role === "reseller"
-              ? <ResellerModulePage role={cfg} moduleKey={activeModule} onBack={() => setActiveModule(null)} />
-              : <ModulePage role={cfg} moduleKey={activeModule} onBack={() => setActiveModule(null)} />
+            <ModuleBoundary onReset={() => setActiveModule(null)}>
+              {role === "reseller"
+                ? <ResellerModulePage role={cfg} moduleKey={activeModule} onBack={() => setActiveModule(null)} />
+                : <ModulePage role={cfg} moduleKey={activeModule} onBack={() => setActiveModule(null)} />}
+            </ModuleBoundary>
           ) : (
             <>
               <ResellerProfileHero
@@ -107,7 +143,14 @@ function DashboardPage() {
               ) : (
                 <Hero role={cfg} onCta={() => setActiveModule(cfg.modules[0]?.key ?? null)} onAnalytics={() => setActiveModule(cfg.modules.find(m => /analytic|report|insight/i.test(m.label))?.key ?? cfg.modules[0]?.key ?? null)} />
               )}
-              <KpiGrid items={cfg.kpis} onOpen={(k) => setActiveModule(k)} />
+              <KpiToolbar
+                tones={availableTones}
+                tone={kpiTone}
+                onToneChange={setKpiTone}
+                sort={kpiSort}
+                onSortChange={setKpiSort}
+              />
+              <KpiGrid items={filteredKpis} onOpen={(k) => setActiveModule(k)} />
               <ContentRows role={cfg} onOpen={(k) => setActiveModule(k)} />
             </>
           )}
