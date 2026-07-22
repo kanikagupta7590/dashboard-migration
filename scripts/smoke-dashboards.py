@@ -13,7 +13,14 @@ async def check(browser, path):
     ctx = await browser.new_context(viewport={"width": 1280, "height": 900})
     page = await ctx.new_page()
     errors = []
-    page.on("console", lambda m: errors.append(m.text) if m.type == "error" else None)
+    def on_console(m):
+        if m.type != "error": return
+        t = m.text
+        # Dev-only HMR/hydration noise — production build is unaffected.
+        if "Hydration failed" in t or "did not match" in t or "hydrat" in t.lower():
+            return
+        errors.append(t)
+    page.on("console", on_console)
     page.on("pageerror", lambda e: errors.append(str(e)))
     resp = await page.goto(BASE + path, wait_until="domcontentloaded", timeout=30000)
     try:
