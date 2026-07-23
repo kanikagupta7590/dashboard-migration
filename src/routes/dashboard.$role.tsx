@@ -1,5 +1,7 @@
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
+import { zodValidator, fallback } from "@tanstack/zod-adapter";
+import { z } from "zod";
 import { Sidebar } from "@/components/dashboard/Sidebar";
 import { TopBar } from "@/components/dashboard/TopBar";
 import { Hero } from "@/components/dashboard/Hero";
@@ -36,12 +38,18 @@ const ROLE_BANNER_GRADIENTS: Record<RoleKey, string> = {
 };
 import { RESELLER_CENTER_ORDER, type CenterKey } from "@/lib/reseller-extras";
 
+const dashboardSearchSchema = z.object({
+  kpiTone: fallback(z.string(), "all").default("all"),
+  kpiSort: fallback(z.string(), "default").default("default"),
+});
+
 export const Route = createFileRoute("/dashboard/$role")({
   beforeLoad: ({ params }) => {
     if (!isRoleKey(params.role)) {
       throw redirect({ to: "/" });
     }
   },
+  validateSearch: zodValidator(dashboardSearchSchema),
   head: ({ params }) => {
     const cfg = isRoleKey(params.role) ? ROLES[params.role] : null;
     return {
@@ -56,11 +64,26 @@ export const Route = createFileRoute("/dashboard/$role")({
 
 function DashboardPage() {
   const { role } = Route.useParams();
+  const search = Route.useSearch();
   const navigate = useNavigate();
   const [activeModule, setActiveModule] = useState<string | null>(null);
   const cfg = ROLES[role as RoleKey];
-  const [kpiTone, setKpiTone] = useState<KpiTone>("all");
-  const [kpiSort, setKpiSort] = useState<KpiSort>("default");
+  const kpiTone = search.kpiTone as KpiTone;
+  const kpiSort = search.kpiSort as KpiSort;
+  const setKpiTone = (t: KpiTone) =>
+    navigate({
+      to: "/dashboard/$role",
+      params: { role },
+      search: (prev: { kpiTone: string; kpiSort: string }) => ({ ...prev, kpiTone: t }),
+      replace: true,
+    });
+  const setKpiSort = (s: KpiSort) =>
+    navigate({
+      to: "/dashboard/$role",
+      params: { role },
+      search: (prev: { kpiTone: string; kpiSort: string }) => ({ ...prev, kpiSort: s }),
+      replace: true,
+    });
 
   function switchRole(next: RoleKey) {
     setActiveModule(null);
