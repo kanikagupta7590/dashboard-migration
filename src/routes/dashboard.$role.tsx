@@ -74,14 +74,14 @@ function DashboardPage() {
     navigate({
       to: "/dashboard/$role",
       params: { role },
-      search: (prev) => ({ ...prev, kpiTone: t }),
+      search: (prev: { kpiTone: string; kpiSort: string }) => ({ ...prev, kpiTone: t }),
       replace: true,
     });
   const setKpiSort = (s: KpiSort) =>
     navigate({
       to: "/dashboard/$role",
       params: { role },
-      search: (prev) => ({ ...prev, kpiSort: s }),
+      search: (prev: { kpiTone: string; kpiSort: string }) => ({ ...prev, kpiSort: s }),
       replace: true,
     });
 
