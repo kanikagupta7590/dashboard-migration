@@ -295,7 +295,7 @@ export function CrudWorkspace({ role, moduleKey, onBack }: { role: RoleConfig; m
           { label: "Pending", value: counts.pending, icon: Clock },
           { label: "Archived", value: counts.archived, icon: Archive },
         ].map((s) => (
-          <div key={s.label} className="rounded-2xl bg-card border border-border p-4 shadow-card">
+          <div key={s.label} className="rounded-2xl bg-card border border-border p-4 depth-3d sheen-3d">
             <div className="flex items-center justify-between">
               <div className="text-xs text-muted-foreground">{s.label}</div>
               <s.icon className="h-3.5 w-3.5 text-muted-foreground" />
@@ -507,7 +507,7 @@ function GridView({ rows, onOpen, selected, onToggle }: { rows: CrudRecord[]; on
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
       {rows.map((r) => (
-        <div key={r.id} className="rounded-2xl border border-border bg-card p-4 shadow-card hover:border-brand/50 transition group">
+        <div key={r.id} className="rounded-2xl border border-border bg-card p-4 depth-3d hover:border-brand/50 group">
           <div className="flex items-start justify-between">
             <input type="checkbox" checked={selected.has(r.id)} onChange={() => onToggle(r.id)} className="accent-[oklch(0.6_0.2_265)]" />
             <StatusPill s={r.status} />
