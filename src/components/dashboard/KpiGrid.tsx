@@ -19,10 +19,12 @@ export function KpiGrid({ items, onOpen }: { items: Kpi[]; onOpen: (k: string) =
           <button
             key={k.key}
             onClick={() => onOpen(k.key)}
-            className={`group text-left rounded-2xl bg-card border border-border p-4 transition-all hover:-translate-y-0.5 shadow-card ${t.ring}`}
+            className={`group text-left rounded-2xl bg-card border border-border p-4 depth-3d sheen-3d ${t.ring}`}
           >
             <div className="flex items-start justify-between">
-              <div className={`grid h-9 w-9 place-items-center rounded-xl ${t.bg}`}>
+              <div
+                className={`grid h-9 w-9 place-items-center rounded-xl ${t.bg} shadow-[inset_0_1px_0_0_oklch(1_0_0/0.14),0_4px_10px_-6px_oklch(0_0_0/0.7)] transition-transform duration-300 group-hover:scale-110`}
+              >
                 <k.icon className={`h-4 w-4 ${t.fg}`} />
               </div>
               <span className="opacity-0 group-hover:opacity-100 transition text-muted-foreground">

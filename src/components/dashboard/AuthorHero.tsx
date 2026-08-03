@@ -80,7 +80,7 @@ export function SlidingHero({
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
-      <div className="relative min-h-[340px] md:min-h-[380px]" style={{ background: s.gradient, transition: "background 700ms ease" }}>
+      <div className="relative flex min-h-[340px] md:min-h-[380px]" style={{ background: s.gradient, transition: "background 700ms ease" }}>
         <div
           className="absolute inset-0 opacity-60 pointer-events-none"
           style={{
@@ -93,7 +93,7 @@ export function SlidingHero({
         <div className="absolute inset-0 opacity-[0.05] mix-blend-overlay pointer-events-none"
           style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.9' /%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")" }} />
 
-        <div key={i} className="relative h-full p-6 md:p-10 flex flex-col justify-center text-white animate-fade-in">
+        <div key={i} className="relative z-[1] flex-1 px-14 md:px-20 py-8 md:py-12 flex flex-col justify-center text-white animate-fade-in">
           <div className="inline-flex items-center gap-2 rounded-full bg-white/10 backdrop-blur px-3 py-1 text-[11px] font-medium uppercase tracking-[0.2em] w-fit">
             <Sparkles className="h-3 w-3" style={{ color: s.accent }} />
             {s.eyebrow}
@@ -110,7 +110,7 @@ export function SlidingHero({
           <div className="mt-5 flex items-center gap-3">
             <button
               onClick={onCta}
-              className="inline-flex items-center gap-2 rounded-xl bg-white text-black px-4 py-2 text-sm font-semibold shadow-glow hover:opacity-95 transition"
+              className="press-3d inline-flex items-center gap-2 rounded-xl bg-white text-black px-4 py-2 text-sm font-semibold hover:opacity-95"
             >
               {role.banner.cta}
             </button>
@@ -124,20 +124,20 @@ export function SlidingHero({
         <button
           aria-label="Previous slide"
           onClick={() => setI((v) => (v - 1 + SLIDES.length) % SLIDES.length)}
-          className="absolute left-3 top-1/2 -translate-y-1/2 grid h-9 w-9 place-items-center rounded-full bg-black/40 hover:bg-black/60 border border-white/20 text-white backdrop-blur transition"
+          className="absolute z-[2] left-3 top-1/2 -translate-y-1/2 grid h-9 w-9 place-items-center rounded-full bg-black/40 hover:bg-black/60 border border-white/20 text-white backdrop-blur transition-colors shadow-[0_6px_16px_-8px_oklch(0_0_0/0.8)]"
         >
           <ChevronLeft className="h-4 w-4" />
         </button>
         <button
           aria-label="Next slide"
           onClick={() => setI((v) => (v + 1) % SLIDES.length)}
-          className="absolute right-3 top-1/2 -translate-y-1/2 grid h-9 w-9 place-items-center rounded-full bg-black/40 hover:bg-black/60 border border-white/20 text-white backdrop-blur transition"
+          className="absolute z-[2] right-3 top-1/2 -translate-y-1/2 grid h-9 w-9 place-items-center rounded-full bg-black/40 hover:bg-black/60 border border-white/20 text-white backdrop-blur transition-colors shadow-[0_6px_16px_-8px_oklch(0_0_0/0.8)]"
         >
           <ChevronRight className="h-4 w-4" />
         </button>
 
         {/* Dots */}
-        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5">
+        <div className="absolute z-[2] bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5">
           {SLIDES.map((_, idx) => (
             <button
               key={idx}
