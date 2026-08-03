@@ -124,14 +124,14 @@ export function SlidingHero({
         <button
           aria-label="Previous slide"
           onClick={() => setI((v) => (v - 1 + SLIDES.length) % SLIDES.length)}
-          className="press-3d absolute z-[2] left-3 top-1/2 -translate-y-1/2 grid h-9 w-9 place-items-center rounded-full bg-black/40 hover:bg-black/60 border border-white/20 text-white backdrop-blur"
+          className="absolute z-[2] left-3 top-1/2 -translate-y-1/2 grid h-9 w-9 place-items-center rounded-full bg-black/40 hover:bg-black/60 border border-white/20 text-white backdrop-blur transition-colors shadow-[0_6px_16px_-8px_oklch(0_0_0/0.8)]"
         >
           <ChevronLeft className="h-4 w-4" />
         </button>
         <button
           aria-label="Next slide"
           onClick={() => setI((v) => (v + 1) % SLIDES.length)}
-          className="press-3d absolute z-[2] right-3 top-1/2 -translate-y-1/2 grid h-9 w-9 place-items-center rounded-full bg-black/40 hover:bg-black/60 border border-white/20 text-white backdrop-blur"
+          className="absolute z-[2] right-3 top-1/2 -translate-y-1/2 grid h-9 w-9 place-items-center rounded-full bg-black/40 hover:bg-black/60 border border-white/20 text-white backdrop-blur transition-colors shadow-[0_6px_16px_-8px_oklch(0_0_0/0.8)]"
         >
           <ChevronRight className="h-4 w-4" />
         </button>
