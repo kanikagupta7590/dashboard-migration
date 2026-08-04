@@ -173,8 +173,12 @@ function DashboardPage() {
                 sort={kpiSort}
                 onSortChange={setKpiSort}
               />
-              <KpiGrid items={filteredKpis} onOpen={(k) => setActiveModule(k)} />
-              <ContentRows role={cfg} onOpen={(k) => setActiveModule(k)} />
+              <KpiGrid items={filteredKpis} roleKey={role} onOpen={(k) => setActiveModule(k)} />
+              {role === "franchise" ? (
+                <FranchiseHome onOpen={(k) => setActiveModule(k)} />
+              ) : (
+                <ContentRows role={cfg} onOpen={(k) => setActiveModule(k)} />
+              )}
             </>
           )}
         </main>
