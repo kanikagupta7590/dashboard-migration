@@ -158,12 +158,14 @@ export function PieChart({
             const mid = (a0 + a1) / 2;
             const cx = r + Math.cos(mid) * off;
             const cy = r + Math.sin(mid) * off;
+            // Fixed precision keeps SSR and client markup byte-identical.
+            const n = (v: number) => v.toFixed(3);
             const p = [
-              `M${cx + Math.cos(a0) * r},${cy + Math.sin(a0) * r}`,
-              `A${r},${r} 0 ${large} 1 ${cx + Math.cos(a1) * r},${cy + Math.sin(a1) * r}`,
+              `M${n(cx + Math.cos(a0) * r)},${n(cy + Math.sin(a0) * r)}`,
+              `A${n(r)},${n(r)} 0 ${large} 1 ${n(cx + Math.cos(a1) * r)},${n(cy + Math.sin(a1) * r)}`,
               inner
-                ? `L${cx + Math.cos(a1) * inner},${cy + Math.sin(a1) * inner} A${inner},${inner} 0 ${large} 0 ${cx + Math.cos(a0) * inner},${cy + Math.sin(a0) * inner} Z`
-                : `L${cx},${cy} Z`,
+                ? `L${n(cx + Math.cos(a1) * inner)},${n(cy + Math.sin(a1) * inner)} A${n(inner)},${n(inner)} 0 ${large} 0 ${n(cx + Math.cos(a0) * inner)},${n(cy + Math.sin(a0) * inner)} Z`
+                : `L${n(cx)},${n(cy)} Z`,
             ].join(" ");
             return (
               <path
