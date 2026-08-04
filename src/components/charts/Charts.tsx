@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useId, useMemo, useState } from "react";
 
 export type Point = { label: string; value: number };
 
@@ -20,7 +20,7 @@ export function Sparkline({
   values, color = "currentColor", w = 96, h = 28, area = true,
 }: { values: number[]; color?: string; w?: number; h?: number; area?: boolean }) {
   const d = useMemo(() => path(values, w, h), [values, w, h]);
-  const id = useMemo(() => `spk${Math.random().toString(36).slice(2, 8)}`, []);
+  const id = `spk${useId().replace(/[:]/g, "")}`;
   return (
     <svg viewBox={`0 0 ${w} ${h}`} width={w} height={h} className="overflow-visible" aria-hidden="true">
       <defs>
