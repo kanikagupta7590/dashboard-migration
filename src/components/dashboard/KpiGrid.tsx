@@ -36,18 +36,16 @@ export function KpiCard({
       <div className="mt-3 flex items-baseline gap-1">
         <span className="text-2xl font-black tracking-tight text-foreground">{fmtValue(m.value, m.unit)}</span>
       </div>
-      <div className="mt-1 flex items-center justify-between gap-2">
-        <div className="min-w-0">
-          <div className="text-xs text-muted-foreground truncate">{kpi.label}</div>
-          <span
-            className={`mt-0.5 inline-flex items-center gap-0.5 text-[10px] font-semibold ${up ? "text-success" : "text-destructive"}`}
-          >
-            {up ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}
-            {Math.abs(m.deltaPct)}% <span className="font-normal text-muted-foreground">vs last period</span>
-          </span>
-        </div>
+      <div className="mt-1 text-xs text-muted-foreground truncate">{kpi.label}</div>
+      <div className="mt-1.5 flex items-end justify-between gap-2">
+        <span
+          className={`inline-flex items-center gap-0.5 text-[10px] font-semibold whitespace-nowrap ${up ? "text-success" : "text-destructive"}`}
+        >
+          {up ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}
+          {Math.abs(m.deltaPct)}%
+        </span>
         <span className={t.fg}>
-          <Sparkline values={m.series} color={t.line} w={72} h={26} />
+          <Sparkline values={m.series} color={t.line} w={64} h={24} />
         </span>
       </div>
     </button>
