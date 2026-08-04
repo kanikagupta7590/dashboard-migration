@@ -21,6 +21,8 @@ import { ResellerPricingWorkspace } from "@/components/dashboard/ResellerPricing
 import { Breadcrumbs } from "@/components/dashboard/Breadcrumbs";
 import { KpiToolbar, type KpiSort, type KpiTone } from "@/components/dashboard/KpiToolbar";
 import { ModuleBoundary } from "@/components/dashboard/ModuleBoundary";
+import { FranchiseHome } from "@/components/dashboard/franchise/FranchiseHome";
+import { FranchiseModulePage, isFranchiseModule } from "@/components/dashboard/franchise/FranchiseModules";
 import { ROLES, isRoleKey, type RoleKey } from "@/lib/roles";
 
 const ROLE_BANNER_GRADIENTS: Record<RoleKey, string> = {
@@ -139,6 +141,8 @@ function DashboardPage() {
             <ModuleBoundary onReset={() => setActiveModule(null)}><ResellerPricingWorkspace onBack={() => setActiveModule(null)} /></ModuleBoundary>
           ) : isCenter && role === "reseller" ? (
             <ModuleBoundary onReset={() => setActiveModule(null)}><ResellerCenterPage centerKey={centerMatch as CenterKey} onBack={() => setActiveModule(null)} /></ModuleBoundary>
+          ) : activeModule && role === "franchise" && isFranchiseModule(activeModule) ? (
+            <ModuleBoundary onReset={() => setActiveModule(null)}><FranchiseModulePage moduleKey={activeModule} onBack={() => setActiveModule(null)} /></ModuleBoundary>
           ) : activeModule === "ai" && role === "vendor" ? (
             <ModuleBoundary onReset={() => setActiveModule(null)}><AISuitePage onBack={() => setActiveModule(null)} /></ModuleBoundary>
           ) : activeModule === "ai" && role === "reseller" ? (
