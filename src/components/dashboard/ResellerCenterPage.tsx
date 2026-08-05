@@ -145,20 +145,69 @@ function FeatureCard({ feature, onOpen }: { feature: CenterFeature; onOpen: () =
 
 function FeatureDetail({ feature, accent }: { feature: CenterFeature; accent: string }) {
   const Icon = feature.icon;
+  const [configOpen, setConfigOpen] = useState(false);
   return (
     <div className="rounded-3xl bg-card border border-border shadow-card overflow-hidden">
-      <div className="p-6 md:p-8 border-b border-border flex items-start gap-4">
-        <div className="grid h-12 w-12 place-items-center rounded-2xl text-white" style={{ background: accent }}>
+      <div className="p-6 md:p-8 border-b border-border grid grid-cols-[minmax(0,1fr)_auto] items-start gap-4">
+        <div className="flex min-w-0 items-start gap-4">
+        <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl text-white" style={{ background: accent }}>
           <Icon className="h-5 w-5" />
         </div>
         <div className="min-w-0">
           <h2 className="text-lg md:text-xl font-bold tracking-tight">{feature.label}</h2>
           <p className="text-xs md:text-sm text-muted-foreground mt-1 max-w-xl">{feature.description}</p>
         </div>
-        <button className="ml-auto inline-flex items-center gap-2 rounded-lg bg-gradient-brand text-brand-foreground px-3 py-2 text-xs font-semibold shadow-glow">
-          <Plus className="h-3.5 w-3.5" /> Configure
+        </div>
+        <button
+          type="button"
+          onClick={() => setConfigOpen((v) => !v)}
+          aria-expanded={configOpen}
+          className="press-3d shrink-0 inline-flex items-center gap-2 rounded-lg bg-gradient-brand text-brand-foreground px-3 py-2 text-xs font-semibold shadow-glow"
+        >
+          <Plus className="h-3.5 w-3.5" /> {configOpen ? "Close" : "Configure"}
         </button>
       </div>
+
+      {configOpen && (
+        <form
+          className="animate-fade-in border-b border-border p-6 md:p-8 grid gap-4 sm:grid-cols-2"
+          onSubmit={(e) => {
+            e.preventDefault();
+            const fd = new FormData(e.currentTarget);
+            try {
+              localStorage.setItem(
+                `sv.center.${feature.key}`,
+                JSON.stringify({ endpoint: fd.get("endpoint"), owner: fd.get("owner") }),
+              );
+              toast.success(`${feature.label} settings saved`);
+            } catch {
+              toast.error("Could not save settings locally");
+            }
+            setConfigOpen(false);
+          }}
+        >
+          <label className="text-xs space-y-1.5">
+            <span className="text-muted-foreground">API endpoint</span>
+            <input
+              name="endpoint"
+              placeholder="https://api.yourdomain.com/reseller/…"
+              className="w-full rounded-lg border border-border bg-background px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-ring"
+            />
+          </label>
+          <label className="text-xs space-y-1.5">
+            <span className="text-muted-foreground">Owner</span>
+            <input
+              name="owner"
+              placeholder="Team or person responsible"
+              className="w-full rounded-lg border border-border bg-background px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-ring"
+            />
+          </label>
+          <div className="sm:col-span-2 flex gap-2">
+            <button type="submit" className="press-3d rounded-lg bg-brand text-brand-foreground px-3 py-2 text-xs font-semibold">Save</button>
+            <button type="button" onClick={() => setConfigOpen(false)} className="press-3d rounded-lg border border-border px-3 py-2 text-xs">Cancel</button>
+          </div>
+        </form>
+      )}
 
       <div className="p-8 md:p-12 grid place-items-center text-center">
         <div className="grid h-14 w-14 place-items-center rounded-full bg-surface-2 text-muted-foreground">
