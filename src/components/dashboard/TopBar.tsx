@@ -3,27 +3,65 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { LogoButton } from "./LogoButton";
 import { signOut } from "@/lib/auth-bridge";
+import { copyToClipboard, notifyPending, readPref, writePref } from "@/lib/ui-actions";
 import { ROLES, ROLE_ORDER, type RoleConfig, type RoleKey } from "@/lib/roles";
 
 export function TopBar({ role, onSwitchRole, onOpenAIChat, onOpenModule }: { role: RoleConfig; onSwitchRole: (r: RoleKey) => void; onOpenAIChat?: () => void; onOpenModule?: (k: string) => void }) {
+  const navigate = useNavigate();
+  const [query, setQuery] = useState("");
+  const searchRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        searchRef.current?.focus();
+      }
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
+  function runSearch() {
+    const q = query.trim();
+    if (!q) return;
+    const hit = role.modules.find((m) => m.label.toLowerCase().includes(q.toLowerCase()));
+    if (hit && onOpenModule) {
+      onOpenModule(hit.key);
+      setQuery("");
+      return;
+    }
+    notifyPending(`No ${role.name} module matches “${q}”`, "Try a module name such as Orders, Leads or Analytics.");
+  }
+
   return (
     <header className="sticky top-0 z-30 flex items-center gap-3 border-b border-border bg-background/80 backdrop-blur px-4 lg:px-6 h-16">
       <LogoButton />
 
       {/* Marketplace quick return */}
-      <button className="hidden md:inline-flex items-center gap-2 rounded-lg bg-surface px-3 py-2 text-xs font-medium text-foreground/90 hover:bg-surface-2 transition border border-border">
+      <button
+        type="button"
+        onClick={() => navigate({ to: "/" })}
+        className="press-3d hidden md:inline-flex shrink-0 items-center gap-2 rounded-lg bg-surface px-3 py-2 text-xs font-medium text-foreground/90 hover:bg-surface-2 transition border border-border"
+      >
         <Store className="h-3.5 w-3.5" />
         Marketplace
       </button>
 
       {/* Search */}
-      <div className="relative flex-1 max-w-2xl">
+      <div className="relative flex-1 min-w-0 max-w-2xl">
         <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <input
+          ref={searchRef}
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          onKeyDown={(e) => { if (e.key === "Enter") runSearch(); }}
+          aria-label="Search products, orders, users and licenses"
+          type="search"
           placeholder="Search products, orders, users, licenses…"
           className="w-full rounded-xl bg-surface pl-10 pr-20 py-2.5 text-sm placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-ring border border-border"
         />
-        <kbd className="absolute right-3 top-1/2 -translate-y-1/2 rounded bg-surface-2 px-1.5 py-0.5 text-[10px] text-muted-foreground border border-border">⌘K</kbd>
+        <kbd aria-hidden className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 rounded bg-surface-2 px-1.5 py-0.5 text-[10px] text-muted-foreground border border-border">⌘K</kbd>
       </div>
 
       {/* AI Chat */}
@@ -36,8 +74,8 @@ export function TopBar({ role, onSwitchRole, onOpenAIChat, onOpenModule }: { rol
       </button>
 
 
-      <SelectChip label="EN" options={["EN","HI","AR","ES","FR","DE"]} />
-      <SelectChip label="USD" options={["USD","INR","EUR","GBP","AED"]} />
+      <SelectChip prefKey="lang" ariaLabel="Interface language" label="EN" options={["EN","HI","AR","ES","FR","DE"]} />
+      <SelectChip prefKey="currency" ariaLabel="Display currency" label="USD" options={["USD","INR","EUR","GBP","AED"]} />
 
       <Divider />
 
@@ -67,13 +105,25 @@ export function TopBar({ role, onSwitchRole, onOpenAIChat, onOpenModule }: { rol
       <QuickCreate role={role} onOpenModule={onOpenModule} />
       {role.key === "reseller" && (
         <>
-          <IconBtn icon={Link2}  title="Referral Link" />
-          <IconBtn icon={QrCode} title="Referral QR Code" />
+          <IconBtn
+            icon={Link2}
+            title="Copy referral link"
+            onClick={() => copyToClipboard(`${window.location.origin}/?ref=${role.key}`, "Referral link copied")}
+          />
+          <IconBtn
+            icon={QrCode}
+            title="Referral QR code"
+            onClick={() => notifyPending("Referral QR code", "QR codes are generated from your referral link once the referral service is connected.")}
+          />
         </>
       )}
-      <IconBtn icon={Award} title="Achievement Badges" />
-      <IconBtn icon={MessageSquare} title="Messages" />
-      <IconBtn icon={Bell} title="Notifications" />
+      <IconBtn icon={Award} title="Achievement badges" onClick={() => onOpenModule?.("ams")} />
+      <IconBtn icon={MessageSquare} title="Messages" onClick={() => onOpenAIChat?.()} />
+      <IconBtn
+        icon={Bell}
+        title="Notifications"
+        onClick={() => notifyPending("No new notifications", "Alerts appear here as soon as your notification service is connected.")}
+      />
 
       <ProfileMenu role={role} onSwitchRole={onSwitchRole} />
 
@@ -131,10 +181,10 @@ function ProfileMenu({ role, onSwitchRole }: { role: RoleConfig; onSwitchRole: (
 
           {!showRoles ? (
             <div className="p-1.5">
-              <MenuItem icon={User} label="Profile" />
+              <MenuItem icon={User} label="Profile" onClick={() => { setOpen(false); notifyPending("Profile", "Profile details come from your existing account system."); }} />
               <MenuItem icon={Repeat} label="Switch role" onClick={() => setShowRoles(true)} chevron />
-              <MenuItem icon={Wallet} label="Wallet & Earnings" />
-              <MenuItem icon={Settings} label="Account settings" />
+              <MenuItem icon={Wallet} label="Wallet & Earnings" onClick={() => { setOpen(false); notifyPending("Wallet & earnings", "Balances are read from your existing payouts service."); }} />
+              <MenuItem icon={Settings} label="Account settings" onClick={() => { setOpen(false); notifyPending("Account settings", "Managed by your existing Software Vala account system."); }} />
               <div className="my-1.5 h-px bg-border" />
               <MenuItem icon={LogOut} label="Sign out" onClick={handleLogout} />
             </div>
@@ -179,7 +229,7 @@ function MenuItem({
   icon: Icon, label, onClick, chevron,
 }: { icon: any; label: string; onClick?: () => void; chevron?: boolean }) {
   return (
-    <button onClick={onClick} className="w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sm hover:bg-surface transition text-left">
+    <button type="button" onClick={onClick} className="press-3d w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sm hover:bg-surface transition text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
       <Icon className="h-4 w-4 text-muted-foreground" />
       <span className="flex-1">{label}</span>
       {chevron && <ChevronDown className="h-3.5 w-3.5 -rotate-90 text-muted-foreground" />}
@@ -191,11 +241,17 @@ function Divider() {
   return <span className="hidden md:block h-6 w-px bg-border" />;
 }
 
-function SelectChip({ label, options }: { label: string; options: string[] }) {
+function SelectChip({
+  label, options, prefKey, ariaLabel,
+}: { label: string; options: string[]; prefKey: string; ariaLabel: string }) {
+  const [value, setValue] = useState(label);
+  useEffect(() => { setValue(readPref(prefKey, label)); }, [prefKey, label]);
   return (
     <div className="hidden md:flex">
       <select
-        defaultValue={label}
+        value={value}
+        aria-label={ariaLabel}
+        onChange={(e) => { setValue(e.target.value); writePref(prefKey, e.target.value); }}
         className="appearance-none rounded-lg bg-surface border border-border px-2.5 py-2 pr-7 text-xs text-foreground/90 hover:bg-surface-2 transition cursor-pointer"
       >
         {options.map((o) => <option key={o} value={o} className="bg-surface">{o}</option>)}
@@ -204,9 +260,15 @@ function SelectChip({ label, options }: { label: string; options: string[] }) {
   );
 }
 
-function IconBtn({ icon: Icon, title }: { icon: any; title?: string }) {
+function IconBtn({ icon: Icon, title, onClick }: { icon: any; title?: string; onClick?: () => void }) {
   return (
-    <button title={title} className="relative grid h-9 w-9 place-items-center rounded-lg bg-surface hover:bg-surface-2 border border-border transition">
+    <button
+      type="button"
+      title={title}
+      aria-label={title}
+      onClick={onClick}
+      className="press-3d relative grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-surface hover:bg-surface-2 border border-border transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+    >
       <Icon className="h-4 w-4" />
     </button>
   );
