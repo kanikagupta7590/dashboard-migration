@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { toast } from "sonner";
 import {
   ArrowLeft, Plus, Search, Pin, Mic, Paperclip, ImageIcon, FileText, Code2,
   Send, Sparkles, Copy, RotateCcw, Pencil, Download, Share2, Bookmark, Save,
