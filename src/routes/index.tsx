@@ -32,7 +32,7 @@ function RoleBridge() {
 
   if (status === "detecting") {
     return (
-      <div className="min-h-screen grid place-items-center bg-background text-foreground">
+      <div className="min-h-dvh grid place-items-center bg-background text-foreground">
         <div className="flex flex-col items-center gap-4">
           <img src={roundLogoAsset.url} alt="Software Vala" className="h-14 w-14 rounded-full ring-2 ring-white/15 shadow-glow" />
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -63,7 +63,7 @@ function NotSignedIn({ onPick }: { onPick: (r: RoleKey) => void }) {
   }, []);
 
   return (
-    <div className="min-h-screen grid place-items-center bg-background text-foreground p-6">
+    <div className="min-h-dvh grid place-items-center bg-background text-foreground p-6">
       <div className="w-full max-w-md rounded-2xl border border-border bg-card p-6 shadow-card">
         <div className="flex items-center gap-3">
           <img src={roundLogoAsset.url} alt="" className="h-10 w-10 rounded-full ring-2 ring-white/15" />
