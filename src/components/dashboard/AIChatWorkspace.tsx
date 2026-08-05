@@ -296,14 +296,14 @@ function MessageBubble({ msg }: { msg: Msg }) {
         </div>
         {!isUser && (
           <div className="flex items-center gap-1 text-muted-foreground">
-            <ActionBtn icon={Copy} label="Copy" />
-            <ActionBtn icon={Pencil} label="Edit" />
-            <ActionBtn icon={RotateCcw} label="Regenerate" />
-            <ActionBtn icon={Download} label="Export PDF" />
-            <ActionBtn icon={FileText} label="Export DOCX" />
-            <ActionBtn icon={Share2} label="Share" />
-            <ActionBtn icon={Save} label="Save prompt" />
-            <ActionBtn icon={Bookmark} label="Bookmark" />
+            <ActionBtn icon={Copy} label="Copy" onAct={() => copyText(msg.content)} />
+            <ActionBtn icon={Pencil} label="Edit" onAct={() => toast.info("Editing is available on the next assistant turn.")} />
+            <ActionBtn icon={RotateCcw} label="Regenerate" onAct={() => toast.info("Connect an AI provider to regenerate this reply.")} />
+            <ActionBtn icon={Download} label="Export TXT" onAct={() => downloadText("software-vala-chat.txt", msg.content)} />
+            <ActionBtn icon={FileText} label="Export MD" onAct={() => downloadText("software-vala-chat.md", `# Software Vala AI\n\n${msg.content}\n`)} />
+            <ActionBtn icon={Share2} label="Share" onAct={() => shareText(msg.content)} />
+            <ActionBtn icon={Save} label="Save prompt" onAct={() => { savePrompt(msg.content); }} />
+            <ActionBtn icon={Bookmark} label="Bookmark" onAct={() => { savePrompt(msg.content, "bookmark"); }} />
           </div>
         )}
       </div>
@@ -311,9 +311,56 @@ function MessageBubble({ msg }: { msg: Msg }) {
   );
 }
 
-function ActionBtn({ icon: Icon, label }: { icon: any; label: string }) {
+async function copyText(text: string) {
+  try {
+    await navigator.clipboard.writeText(text);
+    toast.success("Copied to clipboard");
+  } catch {
+    toast.error("Clipboard permission denied");
+  }
+}
+
+function downloadText(filename: string, text: string) {
+  const url = URL.createObjectURL(new Blob([text], { type: "text/plain;charset=utf-8" }));
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+  toast.success(`Downloaded ${filename}`);
+}
+
+async function shareText(text: string) {
+  if (typeof navigator !== "undefined" && "share" in navigator) {
+    try {
+      await (navigator as Navigator & { share: (d: ShareData) => Promise<void> }).share({ title: "Software Vala AI", text });
+      return;
+    } catch { /* user cancelled — fall through to copy */ }
+  }
+  await copyText(text);
+}
+
+function savePrompt(text: string, kind: "prompt" | "bookmark" = "prompt") {
+  try {
+    const key = kind === "bookmark" ? "sv.ai.bookmarks" : "sv.ai.prompts";
+    const list: string[] = JSON.parse(localStorage.getItem(key) ?? "[]");
+    list.unshift(text);
+    localStorage.setItem(key, JSON.stringify(list.slice(0, 50)));
+    toast.success(kind === "bookmark" ? "Bookmarked" : "Prompt saved");
+  } catch {
+    toast.error("Could not save locally");
+  }
+}
+
+function ActionBtn({ icon: Icon, label, onAct }: { icon: any; label: string; onAct: () => void }) {
   return (
-    <button title={label} className="grid h-7 w-7 place-items-center rounded-md hover:bg-surface transition">
+    <button
+      type="button"
+      title={label}
+      aria-label={label}
+      onClick={onAct}
+      className="press-3d grid h-7 w-7 place-items-center rounded-md hover:bg-surface transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+    >
       <Icon className="h-3.5 w-3.5" />
     </button>
   );
