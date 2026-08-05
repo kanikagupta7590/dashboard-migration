@@ -303,19 +303,34 @@ function TiersView() {
 /* ───────────── PRODUCTS ───────────── */
 
 function ProductsView() {
+  const [catalogQuery, setCatalogQuery] = useState("");
   return (
     <Card>
       <CardTitle title="Reseller Product Catalog" subtitle="Live MRP, your discount, your price, tax, and final payable for each product." />
       <div className="mt-4 flex items-center gap-2">
-        <div className="relative flex-1">
+        <div className="relative flex-1 min-w-0">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <input placeholder="Search the reseller catalog…" className={cn(inputCls, "pl-9")} />
+          <input
+            value={catalogQuery}
+            onChange={(e) => setCatalogQuery(e.target.value)}
+            aria-label="Search the reseller catalog"
+            placeholder="Search the reseller catalog…"
+            className={cn(inputCls, "pl-9")}
+          />
         </div>
-        <button className="rounded-lg border border-border bg-card/60 px-3 py-2 text-sm hover:bg-card">Filters</button>
+        <button
+          type="button"
+          onClick={() => notifyPending("Catalog filters", "Filters activate as soon as the catalog API is connected.")}
+          className="press-3d shrink-0 rounded-lg border border-border bg-card/60 px-3 py-2 text-sm hover:bg-card"
+        >
+          Filters
+        </button>
       </div>
       <div className="mt-5 rounded-xl border border-dashed border-border p-10 text-center text-sm text-muted-foreground">
         <Package className="mx-auto h-6 w-6 mb-2 opacity-70" />
-        No reseller products are wired to this account yet.
+        {catalogQuery.trim()
+          ? `No catalog products match “${catalogQuery.trim()}” yet.`
+          : "No reseller products are wired to this account yet."}
         <div className="mt-1 text-xs">Once the catalog API is connected, each product card shows MRP · Your Discount · Your Price · You Save · Tax · Final Payable · Buy Now · Generate Invoice.</div>
       </div>
     </Card>
