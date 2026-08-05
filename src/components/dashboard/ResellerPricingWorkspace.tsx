@@ -5,6 +5,8 @@ import {
   Medal, Award, Gem, Sparkles, Search, Receipt, ShieldCheck,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { notifyPending } from "@/lib/ui-actions";
+import { toast } from "sonner";
 
 type Props = { onBack: () => void };
 
@@ -224,7 +226,11 @@ function EngineView() {
           <Row label="Final Payable" value={fmt(result.payable)} highlight />
           <Row label="You Save" value={fmt(result.saved)} success />
         </div>
-        <button className="mt-5 w-full rounded-lg bg-brand text-brand-foreground py-2.5 text-sm font-medium shadow-glow hover:opacity-95">
+        <button
+          type="button"
+          onClick={() => toast.success("Invoice generated", { description: "Review it in the Invoice Preview panel, then export as PDF or email it." })}
+          className="press-3d mt-5 w-full rounded-lg bg-brand text-brand-foreground py-2.5 text-sm font-medium shadow-glow hover:opacity-95"
+        >
           Generate Invoice
         </button>
       </Card>
@@ -297,19 +303,34 @@ function TiersView() {
 /* ───────────── PRODUCTS ───────────── */
 
 function ProductsView() {
+  const [catalogQuery, setCatalogQuery] = useState("");
   return (
     <Card>
       <CardTitle title="Reseller Product Catalog" subtitle="Live MRP, your discount, your price, tax, and final payable for each product." />
       <div className="mt-4 flex items-center gap-2">
-        <div className="relative flex-1">
+        <div className="relative flex-1 min-w-0">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <input placeholder="Search the reseller catalog…" className={cn(inputCls, "pl-9")} />
+          <input
+            value={catalogQuery}
+            onChange={(e) => setCatalogQuery(e.target.value)}
+            aria-label="Search the reseller catalog"
+            placeholder="Search the reseller catalog…"
+            className={cn(inputCls, "pl-9")}
+          />
         </div>
-        <button className="rounded-lg border border-border bg-card/60 px-3 py-2 text-sm hover:bg-card">Filters</button>
+        <button
+          type="button"
+          onClick={() => notifyPending("Catalog filters", "Filters activate as soon as the catalog API is connected.")}
+          className="press-3d shrink-0 rounded-lg border border-border bg-card/60 px-3 py-2 text-sm hover:bg-card"
+        >
+          Filters
+        </button>
       </div>
       <div className="mt-5 rounded-xl border border-dashed border-border p-10 text-center text-sm text-muted-foreground">
         <Package className="mx-auto h-6 w-6 mb-2 opacity-70" />
-        No reseller products are wired to this account yet.
+        {catalogQuery.trim()
+          ? `No catalog products match “${catalogQuery.trim()}” yet.`
+          : "No reseller products are wired to this account yet."}
         <div className="mt-1 text-xs">Once the catalog API is connected, each product card shows MRP · Your Discount · Your Price · You Save · Tax · Final Payable · Buy Now · Generate Invoice.</div>
       </div>
     </Card>
@@ -394,7 +415,13 @@ function SettingsView() {
             {g.items.map((it) => (
               <li key={it} className="flex items-center justify-between rounded-lg border border-border bg-white/[0.02] px-3 py-2.5 text-sm">
                 <span>{it}</span>
-                <button className="text-xs text-brand hover:underline">Configure</button>
+                <button
+                  type="button"
+                  onClick={() => notifyPending(`${it}`, "This setting is admin controlled and syncs from your existing Software Vala configuration.")}
+                  className="text-xs text-brand hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
+                >
+                  Configure
+                </button>
               </li>
             ))}
           </ul>
@@ -421,10 +448,18 @@ function InvoicePreview({
           <div className="text-base font-semibold">{invoiceNo}</div>
         </div>
         <div className="flex items-center gap-2">
-          <button className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card/60 px-3 py-1.5 text-xs hover:bg-card">
+          <button
+            type="button"
+            onClick={() => { if (typeof window !== "undefined") window.print(); }}
+            className="press-3d inline-flex items-center gap-1.5 rounded-lg border border-border bg-card/60 px-3 py-1.5 text-xs hover:bg-card"
+          >
             <Download className="h-3.5 w-3.5" /> PDF
           </button>
-          <button className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card/60 px-3 py-1.5 text-xs hover:bg-card">
+          <button
+            type="button"
+            onClick={() => notifyPending("Email invoice", "Invoices send through your existing transactional email service once connected.")}
+            className="press-3d inline-flex items-center gap-1.5 rounded-lg border border-border bg-card/60 px-3 py-1.5 text-xs hover:bg-card"
+          >
             <Mail className="h-3.5 w-3.5" /> Email
           </button>
         </div>

@@ -3,6 +3,7 @@ import { useNavigate } from "@tanstack/react-router";
 import logoAsset from "@/assets/softwarevala-logo-round-v2.jpg.asset.json";
 import type { RoleConfig } from "@/lib/roles";
 import { signOut } from "@/lib/auth-bridge";
+import { notifyPending } from "@/lib/ui-actions";
 import { cn } from "@/lib/utils";
 import { RESELLER_CENTER_ORDER, RESELLER_CENTERS } from "@/lib/reseller-extras";
 
@@ -48,9 +49,13 @@ export function Sidebar({ role, activeModule, onSelectModule }: Props) {
             <NavItem icon={Calculator} label="Pricing Engine" active={activeModule === "pricing"} onClick={() => onSelectModule("pricing")} accent />
           )}
           <NavItem icon={Sparkles} label="AI Chat" active={activeModule === "ai-chat"} onClick={() => onSelectModule("ai-chat")} accent />
-          <NavItem icon={Compass} label="Explore" />
-          <NavItem icon={Layers} label="Marketplace" />
-          <NavItem icon={FolderOpen} label="Library" />
+          <NavItem icon={Compass} label="Explore" onClick={() => navigate({ to: "/" })} />
+          <NavItem icon={Layers} label="Marketplace" onClick={() => navigate({ to: "/" })} />
+          <NavItem
+            icon={FolderOpen}
+            label="Library"
+            onClick={() => onSelectModule(role.modules[0]?.key ?? null)}
+          />
         </Section>
 
         <Section title={`${role.name} Modules`}>
@@ -84,8 +89,24 @@ export function Sidebar({ role, activeModule, onSelectModule }: Props) {
         )}
 
         <Section title="Account">
-          <NavItem icon={Settings} label="Settings" />
-          <NavItem icon={LifeBuoy} label="Support" />
+          <NavItem
+            icon={Settings}
+            label="Settings"
+            onClick={() =>
+              onSelectModule(
+                role.modules.find((m) => /setting|config|profile/i.test(m.label))?.key ?? null,
+              )
+            }
+          />
+          <NavItem
+            icon={LifeBuoy}
+            label="Support"
+            onClick={() =>
+              onSelectModule(
+                role.modules.find((m) => /support|ticket|help/i.test(m.label))?.key ?? "ai-chat",
+              )
+            }
+          />
           <NavItem icon={LogOut} label="Logout" onClick={handleLogout} />
         </Section>
       </nav>
@@ -94,7 +115,11 @@ export function Sidebar({ role, activeModule, onSelectModule }: Props) {
         <div className="text-xs uppercase tracking-wider opacity-80">Upgrade</div>
         <div className="mt-1 font-semibold">Go Pro</div>
         <p className="mt-1 text-xs opacity-80">Unlock advanced analytics & AI tools.</p>
-        <button className="mt-3 w-full rounded-lg bg-white/15 hover:bg-white/25 transition text-xs font-medium py-2">
+        <button
+          type="button"
+          onClick={() => notifyPending("Upgrade to Pro", "Plan upgrades run through your existing Software Vala billing account.")}
+          className="press-3d mt-3 w-full rounded-lg bg-white/15 hover:bg-white/25 transition text-xs font-medium py-2"
+        >
           Upgrade now
         </button>
       </div>
@@ -116,9 +141,11 @@ function NavItem({
 }: { icon: any; label: string; active?: boolean; onClick?: () => void; accent?: boolean }) {
   return (
     <button
+      type="button"
       onClick={onClick}
+      aria-current={active ? "page" : undefined}
       className={cn(
-        "group flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm transition",
+        "group flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
         active
           ? "bg-brand text-brand-foreground shadow-glow"
           : accent

@@ -51,7 +51,11 @@ export function ResellerHero({ onAction }: { onAction?: (key: string) => void })
             >
               <Play className="h-4 w-4 fill-current" /> {b.cta}
             </button>
-            <button className="inline-flex items-center gap-2 rounded-xl bg-white/10 border border-white/15 px-5 py-2.5 text-sm font-semibold text-white hover:bg-white/15 transition">
+            <button
+              type="button"
+              onClick={() => onAction?.("ai-chat")}
+              className="press-3d inline-flex items-center gap-2 rounded-xl bg-white/10 border border-white/15 px-5 py-2.5 text-sm font-semibold text-white hover:bg-white/15 transition"
+            >
               Learn more <ArrowRight className="h-4 w-4" />
             </button>
           </div>
@@ -61,10 +65,10 @@ export function ResellerHero({ onAction }: { onAction?: (key: string) => void })
           <div className="absolute -top-10 -right-10 h-72 w-72 rounded-full blur-3xl opacity-50"
                style={{ background: b.accent }} />
           <div className="relative flex items-center gap-1.5 z-10">
-            <button onClick={prev} className="grid h-9 w-9 place-items-center rounded-full bg-white/10 border border-white/15 hover:bg-white/20 transition text-white">
+            <button type="button" onClick={prev} aria-label="Previous slide" className="press-3d grid h-9 w-9 place-items-center rounded-full bg-white/10 border border-white/15 hover:bg-white/20 transition text-white">
               <ChevronLeft className="h-4 w-4" />
             </button>
-            <button onClick={next} className="grid h-9 w-9 place-items-center rounded-full bg-white/10 border border-white/15 hover:bg-white/20 transition text-white">
+            <button type="button" onClick={next} aria-label="Next slide" className="press-3d grid h-9 w-9 place-items-center rounded-full bg-white/10 border border-white/15 hover:bg-white/20 transition text-white">
               <ChevronRight className="h-4 w-4" />
             </button>
           </div>
