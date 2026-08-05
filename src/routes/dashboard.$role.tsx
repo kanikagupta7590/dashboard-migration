@@ -129,7 +129,7 @@ function DashboardPage() {
     : [{ label: "Home" }, { label: cfg.name }];
 
   return (
-    <div className="min-h-screen flex bg-background text-foreground">
+    <div className="min-h-dvh flex bg-background text-foreground">
       <Sidebar role={cfg} activeModule={activeModule} onSelectModule={setActiveModule} />
       <div className="flex-1 min-w-0 flex flex-col">
         <TopBar role={cfg} onSwitchRole={switchRole} onOpenAIChat={() => setActiveModule("ai-chat")} onOpenModule={(k) => setActiveModule(k)} />
