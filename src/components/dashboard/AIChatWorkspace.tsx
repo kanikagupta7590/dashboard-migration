@@ -39,6 +39,7 @@ export function AIChatWorkspace({ onBack }: { onBack: () => void }) {
   const [mode, setMode] = useState<Mode>(MODES[0]);
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<Msg[]>([]);
+  const [chatQuery, setChatQuery] = useState("");
   const taRef = useRef<HTMLTextAreaElement>(null);
   const endRef = useRef<HTMLDivElement>(null);
 
@@ -60,6 +61,19 @@ export function AIChatWorkspace({ onBack }: { onBack: () => void }) {
     setInput("");
   }
 
+  function newChat() {
+    setMessages([]);
+    setInput("");
+    taRef.current?.focus();
+  }
+
+  function useAssistant(key: string, label: string) {
+    const target = MODES.find((m) => m.key === key);
+    if (target) setMode(target);
+    setInput(`${label}: `);
+    taRef.current?.focus();
+  }
+
   return (
     <div className="h-[calc(100vh-7.5rem)] -mx-4 md:-mx-6 -my-5 flex bg-background overflow-hidden">
       {/* Left sidebar — chat history */}
@@ -68,12 +82,18 @@ export function AIChatWorkspace({ onBack }: { onBack: () => void }) {
           <button onClick={onBack} className="w-full inline-flex items-center gap-2 rounded-lg bg-surface border border-border px-3 py-2 text-xs font-medium hover:bg-surface-2 transition">
             <ArrowLeft className="h-3.5 w-3.5" /> Back to dashboard
           </button>
-          <button className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-gradient-brand text-brand-foreground px-3 py-2.5 text-sm font-semibold shadow-glow">
+          <button onClick={newChat} className="press-3d w-full inline-flex items-center justify-center gap-2 rounded-lg bg-gradient-brand text-brand-foreground px-3 py-2.5 text-sm font-semibold shadow-glow">
             <Plus className="h-4 w-4" /> New chat
           </button>
           <div className="relative">
             <Search className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-            <input placeholder="Search chats…" className="w-full rounded-lg bg-surface border border-border pl-8 pr-3 py-2 text-xs outline-none focus:ring-2 focus:ring-ring" />
+            <input
+              value={chatQuery}
+              onChange={(e) => setChatQuery(e.target.value)}
+              aria-label="Search chats"
+              placeholder="Search chats…"
+              className="w-full rounded-lg bg-surface border border-border pl-8 pr-3 py-2 text-xs outline-none focus:ring-2 focus:ring-ring"
+            />
           </div>
         </div>
 
@@ -91,8 +111,12 @@ export function AIChatWorkspace({ onBack }: { onBack: () => void }) {
 
         <div className="p-3 border-t border-border space-y-1">
           <div className="px-2 text-[10px] uppercase tracking-[0.2em] text-muted-foreground mb-1">Assistants</div>
-          {ASSISTANTS.map((a) => (
-            <button key={a.key} className="w-full flex items-center gap-3 rounded-lg px-2.5 py-2 text-xs hover:bg-surface transition text-left">
+          {ASSISTANTS.filter((a) => a.label.toLowerCase().includes(chatQuery.trim().toLowerCase())).map((a) => (
+            <button
+              key={a.key}
+              onClick={() => useAssistant(a.key, a.label)}
+              className="press-3d w-full flex items-center gap-3 rounded-lg px-2.5 py-2 text-xs hover:bg-surface transition text-left"
+            >
               <a.icon className="h-3.5 w-3.5 text-muted-foreground" />
               <span className="flex-1 truncate">{a.label}</span>
               <ChevronRight className="h-3 w-3 text-muted-foreground" />
