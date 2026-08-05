@@ -5,6 +5,8 @@ import {
   Medal, Award, Gem, Sparkles, Search, Receipt, ShieldCheck,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { notifyPending } from "@/lib/ui-actions";
+import { toast } from "sonner";
 
 type Props = { onBack: () => void };
 
@@ -224,7 +226,11 @@ function EngineView() {
           <Row label="Final Payable" value={fmt(result.payable)} highlight />
           <Row label="You Save" value={fmt(result.saved)} success />
         </div>
-        <button className="mt-5 w-full rounded-lg bg-brand text-brand-foreground py-2.5 text-sm font-medium shadow-glow hover:opacity-95">
+        <button
+          type="button"
+          onClick={() => toast.success("Invoice generated", { description: "Review it in the Invoice Preview panel, then export as PDF or email it." })}
+          className="press-3d mt-5 w-full rounded-lg bg-brand text-brand-foreground py-2.5 text-sm font-medium shadow-glow hover:opacity-95"
+        >
           Generate Invoice
         </button>
       </Card>
