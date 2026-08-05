@@ -415,7 +415,13 @@ function SettingsView() {
             {g.items.map((it) => (
               <li key={it} className="flex items-center justify-between rounded-lg border border-border bg-white/[0.02] px-3 py-2.5 text-sm">
                 <span>{it}</span>
-                <button className="text-xs text-brand hover:underline">Configure</button>
+                <button
+                  type="button"
+                  onClick={() => notifyPending(`${it}`, "This setting is admin controlled and syncs from your existing Software Vala configuration.")}
+                  className="text-xs text-brand hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
+                >
+                  Configure
+                </button>
               </li>
             ))}
           </ul>
@@ -442,10 +448,18 @@ function InvoicePreview({
           <div className="text-base font-semibold">{invoiceNo}</div>
         </div>
         <div className="flex items-center gap-2">
-          <button className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card/60 px-3 py-1.5 text-xs hover:bg-card">
+          <button
+            type="button"
+            onClick={() => { if (typeof window !== "undefined") window.print(); }}
+            className="press-3d inline-flex items-center gap-1.5 rounded-lg border border-border bg-card/60 px-3 py-1.5 text-xs hover:bg-card"
+          >
             <Download className="h-3.5 w-3.5" /> PDF
           </button>
-          <button className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card/60 px-3 py-1.5 text-xs hover:bg-card">
+          <button
+            type="button"
+            onClick={() => notifyPending("Email invoice", "Invoices send through your existing transactional email service once connected.")}
+            className="press-3d inline-flex items-center gap-1.5 rounded-lg border border-border bg-card/60 px-3 py-1.5 text-xs hover:bg-card"
+          >
             <Mail className="h-3.5 w-3.5" /> Email
           </button>
         </div>
