@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { ArrowDownRight, ArrowUpRight, MoreVertical } from "lucide-react";
 import type { Kpi } from "@/lib/roles";
 import { Sparkline } from "@/components/charts/Charts";
@@ -12,7 +13,7 @@ const toneStyle: Record<Kpi["tone"], { bg: string; fg: string; ring: string; lin
   cyan:    { bg: "bg-[oklch(0.7_0.16_210)]/15", fg: "text-[oklch(0.78_0.15_210)]", ring: "hover:border-[oklch(0.7_0.16_210)]/60", line: "oklch(0.74 0.15 210)" },
 };
 
-export function KpiCard({
+function KpiCardBase({
   kpi, roleKey, onOpen,
 }: { kpi: Kpi; roleKey: string; onOpen?: (k: string) => void }) {
   const t = toneStyle[kpi.tone];
@@ -52,7 +53,7 @@ export function KpiCard({
   );
 }
 
-export function KpiGrid({ items, roleKey, onOpen }: { items: Kpi[]; roleKey: string; onOpen: (k: string) => void }) {
+function KpiGridBase({ items, roleKey, onOpen }: { items: Kpi[]; roleKey: string; onOpen: (k: string) => void }) {
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3 md:gap-4">
       {items.map((k) => (
@@ -61,3 +62,7 @@ export function KpiGrid({ items, roleKey, onOpen }: { items: Kpi[]; roleKey: str
     </div>
   );
 }
+
+export const KpiGrid = memo(KpiGridBase) as typeof KpiGridBase;
+
+export const KpiCard = memo(KpiCardBase) as typeof KpiCardBase;

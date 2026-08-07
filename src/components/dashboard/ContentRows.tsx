@@ -1,8 +1,9 @@
+import { memo } from "react";
 import { Inbox, Plus } from "lucide-react";
 import { toast } from "sonner";
 import type { RoleConfig } from "@/lib/roles";
 
-export function ContentRows({ role, onOpen }: { role: RoleConfig; onOpen?: (k: string) => void }) {
+function ContentRowsBase({ role, onOpen }: { role: RoleConfig; onOpen?: (k: string) => void }) {
   const firstModule = role.modules[0];
   const open = (k?: string) => { if (k && onOpen) onOpen(k); };
   const settingsModule =
@@ -141,3 +142,5 @@ function EmptyBlock({ label, sub, cta, onCta }: { label: string; sub: string; ct
     </div>
   );
 }
+
+export const ContentRows = memo(ContentRowsBase) as typeof ContentRowsBase;

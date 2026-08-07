@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect, useRef } from "react";
+import { useCallback, useMemo, useState, useEffect, useRef, createContext, useContext } from "react";
 import {
   ArrowLeft, Plus, Search, Filter, Download, Upload, Trash2, Copy,
   Archive, ArchiveRestore, Check, X, Eye, Pencil, MoreHorizontal,
@@ -7,6 +7,7 @@ import {
   MessageSquare, History, ShieldCheck, Inbox, AlertTriangle, Tag, Calendar,
   DollarSign, User, FolderOpen, Clock, ListChecks,
 } from "lucide-react";
+import { can, type Capability } from "@/lib/permissions";
 import { toast } from "sonner";
 import type { RoleConfig } from "@/lib/roles";
 import { useCrud, exportJson, downloadFile, type CrudRecord, type RecordStatus } from "@/lib/crud-store";
@@ -37,7 +38,22 @@ function fmtDate(s: string) {
   catch { return s; }
 }
 
-export function CrudWorkspace({ role, moduleKey, onBack }: { role: RoleConfig; moduleKey: string; onBack: () => void }) {
+const CapContext = createContext<(cap: Capability) => boolean>(() => true);
+const useCap = () => useContext(CapContext);
+
+type CrudProps = { role: RoleConfig; moduleKey: string; onBack: () => void };
+
+export function CrudWorkspace(props: CrudProps) {
+  const cap = useCallback((c: Capability) => can(props.role.key, c), [props.role.key]);
+  return (
+    <CapContext.Provider value={cap}>
+      <CrudWorkspaceInner {...props} />
+    </CapContext.Provider>
+  );
+}
+
+function CrudWorkspaceInner({ role, moduleKey, onBack }: CrudProps) {
+  const allow = (cap: Capability) => can(role.key, cap);
   const mod = role.modules.find((m) => m.key === moduleKey) ?? { key: moduleKey, label: moduleKey, icon: Inbox };
   const Icon = mod.icon;
   const singular = mod.label.replace(/s$/, "") || mod.label;
@@ -268,22 +284,22 @@ export function CrudWorkspace({ role, moduleKey, onBack }: { role: RoleConfig; m
 
         <div className="ml-auto flex items-center gap-2">
           <input ref={importRef} type="file" accept="application/json" hidden onChange={handleImportFile} />
-          <button onClick={handleImportClick}
+          {allow("import") && <button onClick={handleImportClick}
             className="inline-flex items-center gap-1.5 rounded-lg bg-surface border border-border px-3 py-2 text-xs font-medium hover:bg-surface-2 transition">
             <Upload className="h-3.5 w-3.5" /> Import
-          </button>
-          <button onClick={() => handleExport(filtered)}
+          </button>}
+          {allow("export") && <button onClick={() => handleExport(filtered)}
             className="inline-flex items-center gap-1.5 rounded-lg bg-surface border border-border px-3 py-2 text-xs font-medium hover:bg-surface-2 transition">
             <Download className="h-3.5 w-3.5" /> Export
-          </button>
-          <button onClick={() => { crud.reset(); toast.success("Reset to sample data"); }}
+          </button>}
+          {allow("reset_data") && <button onClick={() => { crud.reset(); toast.success("Reset to sample data"); }}
             className="inline-flex items-center gap-1.5 rounded-lg bg-surface border border-border px-3 py-2 text-xs font-medium hover:bg-surface-2 transition">
             <RotateCcw className="h-3.5 w-3.5" /> Reset
-          </button>
-          <button onClick={() => setMode({ kind: "add" })}
+          </button>}
+          {allow("create") && <button onClick={() => setMode({ kind: "add" })}
             className="inline-flex items-center gap-2 rounded-lg bg-gradient-brand text-brand-foreground px-3 py-2 text-xs font-semibold shadow-glow">
             <Plus className="h-3.5 w-3.5" /> New {singular}
-          </button>
+          </button>}
         </div>
       </div>
 
@@ -310,12 +326,12 @@ export function CrudWorkspace({ role, moduleKey, onBack }: { role: RoleConfig; m
         <div className="flex flex-wrap items-center gap-2 rounded-xl border border-border bg-surface px-3 py-2 text-xs">
           <span className="font-medium">{selected.size} selected</span>
           <div className="ml-auto flex flex-wrap items-center gap-1">
-            <BulkBtn icon={Check} label="Approve" onClick={() => { crud.bulkSetStatus([...selected], "approved"); toast.success("Approved"); setSelected(new Set()); }} />
-            <BulkBtn icon={X} label="Reject" onClick={() => { crud.bulkSetStatus([...selected], "rejected"); toast.success("Rejected"); setSelected(new Set()); }} />
-            <BulkBtn icon={Archive} label="Archive" onClick={() => { crud.bulkSetStatus([...selected], "archived"); toast.success("Archived"); setSelected(new Set()); }} />
-            <BulkBtn icon={ArchiveRestore} label="Restore" onClick={() => { crud.bulkSetStatus([...selected], "active"); toast.success("Restored"); setSelected(new Set()); }} />
-            <BulkBtn icon={Download} label="Export" onClick={() => { handleExport(crud.records.filter(r => selected.has(r.id))); }} />
-            <BulkBtn icon={Trash2} label="Delete" danger onClick={() => setConfirm({ ids: [...selected] })} />
+            {allow("approve") && <BulkBtn icon={Check} label="Approve" onClick={() => { crud.bulkSetStatus([...selected], "approved"); toast.success("Approved"); setSelected(new Set()); }} />}
+            {allow("approve") && <BulkBtn icon={X} label="Reject" onClick={() => { crud.bulkSetStatus([...selected], "rejected"); toast.success("Rejected"); setSelected(new Set()); }} />}
+            {allow("update") && <BulkBtn icon={Archive} label="Archive" onClick={() => { crud.bulkSetStatus([...selected], "archived"); toast.success("Archived"); setSelected(new Set()); }} />}
+            {allow("update") && <BulkBtn icon={ArchiveRestore} label="Restore" onClick={() => { crud.bulkSetStatus([...selected], "active"); toast.success("Restored"); setSelected(new Set()); }} />}
+            {allow("export") && <BulkBtn icon={Download} label="Export" onClick={() => { handleExport(crud.records.filter(r => selected.has(r.id))); }} />}
+            {allow("delete") && <BulkBtn icon={Trash2} label="Delete" danger onClick={() => setConfirm({ ids: [...selected] })} />}
             <BulkBtn icon={X} label="Clear" onClick={() => setSelected(new Set())} />
           </div>
         </div>
@@ -327,7 +343,7 @@ export function CrudWorkspace({ role, moduleKey, onBack }: { role: RoleConfig; m
           icon={Inbox}
           title={`No ${mod.label.toLowerCase()} match your filters`}
           sub="Try clearing search, switching status, or create a new record."
-          primary={{ label: `Create ${singular}`, onClick: () => setMode({ kind: "add" }) }}
+          primary={allow("create") ? { label: `Create ${singular}`, onClick: () => setMode({ kind: "add" }) } : undefined}
           secondary={{ label: "Clear filters", onClick: () => { setQuery(""); setStatusFilter("all"); } }}
         />
       ) : view === "table" ? (
@@ -468,6 +484,7 @@ function RowMenu({ onView, onEdit, onDuplicate, onArchive, onDelete, archived }:
   onView: () => void; onEdit: () => void; onDuplicate: () => void; onArchive: () => void; onDelete: () => void; archived: boolean;
 }) {
   const [open, setOpen] = useState(false);
+  const cap = useCap();
   useEffect(() => {
     if (!open) return;
     const close = () => setOpen(false);
@@ -483,11 +500,13 @@ function RowMenu({ onView, onEdit, onDuplicate, onArchive, onDelete, archived }:
       {open && (
         <div className="absolute right-0 z-30 mt-1 w-44 rounded-lg border border-border bg-card shadow-lg p-1 text-xs">
           <MenuItem icon={Eye} label="View details" onClick={() => { setOpen(false); onView(); }} />
-          <MenuItem icon={Pencil} label="Edit" onClick={() => { setOpen(false); onEdit(); }} />
-          <MenuItem icon={Copy} label="Duplicate" onClick={() => { setOpen(false); onDuplicate(); }} />
-          <MenuItem icon={archived ? ArchiveRestore : Archive} label={archived ? "Restore" : "Archive"} onClick={() => { setOpen(false); onArchive(); }} />
-          <div className="my-1 h-px bg-border" />
-          <MenuItem icon={Trash2} label="Delete" danger onClick={() => { setOpen(false); onDelete(); }} />
+          {cap("update") && <MenuItem icon={Pencil} label="Edit" onClick={() => { setOpen(false); onEdit(); }} />}
+          {cap("create") && <MenuItem icon={Copy} label="Duplicate" onClick={() => { setOpen(false); onDuplicate(); }} />}
+          {cap("update") && <MenuItem icon={archived ? ArchiveRestore : Archive} label={archived ? "Restore" : "Archive"} onClick={() => { setOpen(false); onArchive(); }} />}
+          {cap("delete") && <>
+            <div className="my-1 h-px bg-border" />
+            <MenuItem icon={Trash2} label="Delete" danger onClick={() => { setOpen(false); onDelete(); }} />
+          </>}
         </div>
       )}
     </div>
