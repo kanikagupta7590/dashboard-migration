@@ -1,4 +1,5 @@
 import { Search, Bell, MessageSquare, Sparkles, Wallet, Trophy, Zap, ChevronDown, Store, User, Settings, LogOut, Repeat, Check, Plus, Award, Hourglass, Coins, TrendingUp, Link2, QrCode, BadgeCheck } from "lucide-react";
+import { ThemeToggle } from "./ThemeToggle";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { LogoButton } from "./LogoButton";
@@ -118,6 +119,7 @@ export function TopBar({ role, onSwitchRole, onOpenAIChat, onOpenModule }: { rol
         </>
       )}
       <IconBtn icon={Award} title="Achievement badges" onClick={() => onOpenModule?.("ams")} />
+      <ThemeToggle />
       <IconBtn icon={MessageSquare} title="Messages" onClick={() => onOpenAIChat?.()} />
       <IconBtn
         icon={Bell}
