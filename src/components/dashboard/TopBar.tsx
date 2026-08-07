@@ -118,6 +118,7 @@ export function TopBar({ role, onSwitchRole, onOpenAIChat, onOpenModule }: { rol
         </>
       )}
       <IconBtn icon={Award} title="Achievement badges" onClick={() => onOpenModule?.("ams")} />
+      <ThemeToggle />
       <IconBtn icon={MessageSquare} title="Messages" onClick={() => onOpenAIChat?.()} />
       <IconBtn
         icon={Bell}
