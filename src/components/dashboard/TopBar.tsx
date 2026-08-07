@@ -1,4 +1,5 @@
 import { Search, Bell, MessageSquare, Sparkles, Wallet, Trophy, Zap, ChevronDown, Store, User, Settings, LogOut, Repeat, Check, Plus, Award, Hourglass, Coins, TrendingUp, Link2, QrCode, BadgeCheck } from "lucide-react";
+import { ThemeToggle } from "./ThemeToggle";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { LogoButton } from "./LogoButton";
