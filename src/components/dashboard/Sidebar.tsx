@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { Home, Compass, Layers, FolderOpen, Settings, LifeBuoy, LogOut, Sparkles, Calculator } from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
 import logoAsset from "@/assets/softwarevala-logo-round-v2.jpg.asset.json";
@@ -13,7 +14,7 @@ type Props = {
   onSelectModule: (key: string | null) => void;
 };
 
-export function Sidebar({ role, activeModule, onSelectModule }: Props) {
+function SidebarBase({ role, activeModule, onSelectModule }: Props) {
   const navigate = useNavigate();
   async function handleLogout() {
     await signOut();
@@ -160,3 +161,5 @@ function NavItem({
     </button>
   );
 }
+
+export const Sidebar = memo(SidebarBase) as typeof SidebarBase;

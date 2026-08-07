@@ -1,5 +1,5 @@
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { Suspense, lazy, useCallback, useMemo, useState } from "react";
 import { zodValidator, fallback } from "@tanstack/zod-adapter";
 import { z } from "zod";
 import { Sidebar } from "@/components/dashboard/Sidebar";
@@ -11,19 +11,25 @@ import { AuthorHero } from "@/components/dashboard/AuthorHero";
 import { ResellerProfileHero } from "@/components/dashboard/ResellerProfileHero";
 import { KpiGrid } from "@/components/dashboard/KpiGrid";
 import { ContentRows } from "@/components/dashboard/ContentRows";
-import { ModulePage } from "@/components/dashboard/ModulePage";
-import { ResellerModulePage } from "@/components/dashboard/ResellerModulePage";
-import { ResellerCenterPage } from "@/components/dashboard/ResellerCenterPage";
-import { AIChatWorkspace } from "@/components/dashboard/AIChatWorkspace";
-import { AISuitePage } from "@/components/dashboard/AISuitePage";
-import { ResellerAISuitePage } from "@/components/dashboard/ResellerAISuitePage";
-import { ResellerPricingWorkspace } from "@/components/dashboard/ResellerPricingWorkspace";
 import { Breadcrumbs } from "@/components/dashboard/Breadcrumbs";
 import { KpiToolbar, type KpiSort, type KpiTone } from "@/components/dashboard/KpiToolbar";
 import { ModuleBoundary } from "@/components/dashboard/ModuleBoundary";
-import { FranchiseHome } from "@/components/dashboard/franchise/FranchiseHome";
-import { FranchiseModulePage, isFranchiseModule } from "@/components/dashboard/franchise/FranchiseModules";
 import { ROLES, isRoleKey, type RoleKey } from "@/lib/roles";
+import { usePermissions } from "@/hooks/use-permissions";
+import { ModuleFallback, AccessDenied } from "@/components/dashboard/AccessStates";
+
+const AIChatWorkspace = lazy(() => import("@/components/dashboard/AIChatWorkspace").then((m) => ({ default: m.AIChatWorkspace })));
+const AISuitePage = lazy(() => import("@/components/dashboard/AISuitePage").then((m) => ({ default: m.AISuitePage })));
+const ResellerAISuitePage = lazy(() => import("@/components/dashboard/ResellerAISuitePage").then((m) => ({ default: m.ResellerAISuitePage })));
+const ResellerPricingWorkspace = lazy(() => import("@/components/dashboard/ResellerPricingWorkspace").then((m) => ({ default: m.ResellerPricingWorkspace })));
+const ResellerCenterPage = lazy(() => import("@/components/dashboard/ResellerCenterPage").then((m) => ({ default: m.ResellerCenterPage })));
+const ModulePage = lazy(() => import("@/components/dashboard/ModulePage").then((m) => ({ default: m.ModulePage })));
+const ResellerModulePage = lazy(() => import("@/components/dashboard/ResellerModulePage").then((m) => ({ default: m.ResellerModulePage })));
+const FranchiseHome = lazy(() => import("@/components/dashboard/franchise/FranchiseHome").then((m) => ({ default: m.FranchiseHome })));
+const FranchiseModulePage = lazy(() => import("@/components/dashboard/franchise/FranchiseModules").then((m) => ({ default: m.FranchiseModulePage })));
+const FRANCHISE_MODULE_KEYS = ["branches", "leads", "revenue", "employees"];
+const isFranchiseModule = (k: string) => FRANCHISE_MODULE_KEYS.includes(k);
+
 
 const ROLE_BANNER_GRADIENTS: Record<RoleKey, string> = {
   reseller:   "linear-gradient(120deg, oklch(0.26 0.06 175), oklch(0.32 0.16 160), oklch(0.42 0.22 150))",
@@ -70,6 +76,12 @@ function DashboardPage() {
   const navigate = useNavigate();
   const [activeModule, setActiveModule] = useState<string | null>(null);
   const cfg = ROLES[role as RoleKey];
+  const perms = usePermissions(role as RoleKey);
+  const openModule = useCallback(
+    (key: string | null) => setActiveModule(key && perms.canOpen(key) ? key : null),
+    [perms],
+  );
+  const closeModule = useCallback(() => setActiveModule(null), []);
   const kpiTone = search.kpiTone as KpiTone;
   const kpiSort = search.kpiSort as KpiSort;
   const setKpiTone = (t: KpiTone) =>
@@ -87,10 +99,21 @@ function DashboardPage() {
       replace: true,
     });
 
-  function switchRole(next: RoleKey) {
-    setActiveModule(null);
-    navigate({ to: "/dashboard/$role", params: { role: next } });
-  }
+  const switchRoleUnchecked = useCallback(
+    (next: RoleKey) => {
+      setActiveModule(null);
+      navigate({ to: "/dashboard/$role", params: { role: next } });
+    },
+    [navigate],
+  );
+  const switchRole = useCallback(
+    (next: RoleKey) => {
+      if (!perms.accessibleRoles.includes(next)) return;
+      closeModule();
+      navigate({ to: "/dashboard/$role", params: { role: next } });
+    },
+    [navigate, perms.accessibleRoles],
+  );
 
   const isAIChat = activeModule === "ai-chat";
   const isPricing = activeModule === "pricing" && role === "reseller";
@@ -125,34 +148,40 @@ function DashboardPage() {
   })();
 
   const crumbs = activeLabel
-    ? [{ label: "Home", onClick: () => setActiveModule(null) }, { label: cfg.name, onClick: () => setActiveModule(null) }, { label: activeLabel }]
+    ? [{ label: "Home", onClick: closeModule }, { label: cfg.name, onClick: closeModule }, { label: activeLabel }]
     : [{ label: "Home" }, { label: cfg.name }];
 
   return (
     <div className="min-h-dvh flex bg-background text-foreground">
-      <Sidebar role={cfg} activeModule={activeModule} onSelectModule={setActiveModule} />
+      <Sidebar role={cfg} activeModule={activeModule} onSelectModule={openModule} />
       <div className="flex-1 min-w-0 flex flex-col">
-        <TopBar role={cfg} onSwitchRole={switchRole} onOpenAIChat={() => setActiveModule("ai-chat")} onOpenModule={(k) => setActiveModule(k)} />
+        <TopBar role={cfg} onSwitchRole={switchRole} onOpenAIChat={() => openModule("ai-chat")} onOpenModule={openModule} allowedRoles={perms.accessibleRoles} />
         <main className="flex-1 px-4 md:px-6 py-5 space-y-5 overflow-x-hidden">
           <Breadcrumbs items={crumbs} />
-          {isAIChat ? (
-            <ModuleBoundary onReset={() => setActiveModule(null)}><AIChatWorkspace onBack={() => setActiveModule(null)} /></ModuleBoundary>
+          {!perms.allowedHere ? (
+            <AccessDenied
+              roleName={cfg.name}
+              sessionRole={perms.sessionRole}
+              onGoHome={() => perms.sessionRole && switchRoleUnchecked(perms.sessionRole)}
+            />
+          ) : isAIChat ? (
+            <ModuleBoundary onReset={closeModule}><Suspense fallback={<ModuleFallback />}><AIChatWorkspace onBack={closeModule} /></Suspense></ModuleBoundary>
           ) : isPricing ? (
-            <ModuleBoundary onReset={() => setActiveModule(null)}><ResellerPricingWorkspace onBack={() => setActiveModule(null)} /></ModuleBoundary>
+            <ModuleBoundary onReset={closeModule}><Suspense fallback={<ModuleFallback />}><ResellerPricingWorkspace onBack={closeModule} /></Suspense></ModuleBoundary>
           ) : isCenter && role === "reseller" ? (
-            <ModuleBoundary onReset={() => setActiveModule(null)}><ResellerCenterPage centerKey={centerMatch as CenterKey} onBack={() => setActiveModule(null)} /></ModuleBoundary>
+            <ModuleBoundary onReset={closeModule}><Suspense fallback={<ModuleFallback />}><ResellerCenterPage centerKey={centerMatch as CenterKey} onBack={closeModule} /></Suspense></ModuleBoundary>
           ) : activeModule && role === "franchise" && isFranchiseModule(activeModule) ? (
-            <ModuleBoundary onReset={() => setActiveModule(null)}><FranchiseModulePage moduleKey={activeModule} onBack={() => setActiveModule(null)} /></ModuleBoundary>
+            <ModuleBoundary onReset={closeModule}><Suspense fallback={<ModuleFallback />}><FranchiseModulePage moduleKey={activeModule} onBack={closeModule} /></Suspense></ModuleBoundary>
           ) : activeModule === "ai" && role === "vendor" ? (
-            <ModuleBoundary onReset={() => setActiveModule(null)}><AISuitePage onBack={() => setActiveModule(null)} /></ModuleBoundary>
+            <ModuleBoundary onReset={closeModule}><Suspense fallback={<ModuleFallback />}><AISuitePage onBack={closeModule} /></Suspense></ModuleBoundary>
           ) : activeModule === "ai" && role === "reseller" ? (
-            <ModuleBoundary onReset={() => setActiveModule(null)}><ResellerAISuitePage onBack={() => setActiveModule(null)} /></ModuleBoundary>
+            <ModuleBoundary onReset={closeModule}><Suspense fallback={<ModuleFallback />}><ResellerAISuitePage onBack={closeModule} /></Suspense></ModuleBoundary>
           ) : activeModule ? (
-            <ModuleBoundary onReset={() => setActiveModule(null)}>
+            <ModuleBoundary onReset={closeModule}><Suspense fallback={<ModuleFallback />}>
               {role === "reseller"
-                ? <ResellerModulePage role={cfg} moduleKey={activeModule} onBack={() => setActiveModule(null)} />
-                : <ModulePage role={cfg} moduleKey={activeModule} onBack={() => setActiveModule(null)} />}
-            </ModuleBoundary>
+                ? <ResellerModulePage role={cfg} moduleKey={activeModule} onBack={closeModule} />
+                : <ModulePage role={cfg} moduleKey={activeModule} onBack={closeModule} />}
+            </Suspense></ModuleBoundary>
           ) : (
             <>
               <ResellerProfileHero
@@ -164,11 +193,11 @@ function DashboardPage() {
               {role === "reseller" ? (
                 <ResellerHero />
               ) : role === "vendor" ? (
-                <VendorSliderHero role={cfg} onCta={() => setActiveModule(cfg.modules[0]?.key ?? null)} />
+                <VendorSliderHero role={cfg} onCta={() => openModule(cfg.modules[0]?.key ?? null)} />
               ) : role === "author" ? (
-                <AuthorHero role={cfg} onCta={() => setActiveModule(cfg.modules[0]?.key ?? null)} />
+                <AuthorHero role={cfg} onCta={() => openModule(cfg.modules[0]?.key ?? null)} />
               ) : (
-                <Hero role={cfg} onCta={() => setActiveModule(cfg.modules[0]?.key ?? null)} onAnalytics={() => setActiveModule(cfg.modules.find(m => /analytic|report|insight/i.test(m.label))?.key ?? cfg.modules[0]?.key ?? null)} />
+                <Hero role={cfg} onCta={() => openModule(cfg.modules[0]?.key ?? null)} onAnalytics={() => openModule(cfg.modules.find(m => /analytic|report|insight/i.test(m.label))?.key ?? cfg.modules[0]?.key ?? null)} />
               )}
               <KpiToolbar
                 tones={availableTones}
@@ -177,11 +206,11 @@ function DashboardPage() {
                 sort={kpiSort}
                 onSortChange={setKpiSort}
               />
-              <KpiGrid items={filteredKpis} roleKey={role} onOpen={(k) => setActiveModule(k)} />
+              <KpiGrid items={filteredKpis} roleKey={role} onOpen={openModule} />
               {role === "franchise" ? (
-                <FranchiseHome onOpen={(k) => setActiveModule(k)} />
+                <Suspense fallback={<ModuleFallback />}><FranchiseHome onOpen={openModule} /></Suspense>
               ) : (
-                <ContentRows role={cfg} onOpen={(k) => setActiveModule(k)} />
+                <ContentRows role={cfg} onOpen={openModule} />
               )}
             </>
           )}

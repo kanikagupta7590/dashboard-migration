@@ -1,10 +1,11 @@
+import { memo } from "react";
 import { ArrowUpDown, Filter as FilterIcon } from "lucide-react";
 import type { Kpi } from "@/lib/roles";
 
 export type KpiSort = "default" | "label_asc" | "label_desc" | "tone";
 export type KpiTone = Kpi["tone"] | "all";
 
-export function KpiToolbar({
+function KpiToolbarBase({
   tones, tone, onToneChange, sort, onSortChange,
 }: {
   tones: KpiTone[];
@@ -49,3 +50,5 @@ export function KpiToolbar({
     </div>
   );
 }
+
+export const KpiToolbar = memo(KpiToolbarBase) as typeof KpiToolbarBase;

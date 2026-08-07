@@ -7,7 +7,7 @@ import { signOut } from "@/lib/auth-bridge";
 import { copyToClipboard, notifyPending, readPref, writePref } from "@/lib/ui-actions";
 import { ROLES, ROLE_ORDER, type RoleConfig, type RoleKey } from "@/lib/roles";
 
-export function TopBar({ role, onSwitchRole, onOpenAIChat, onOpenModule }: { role: RoleConfig; onSwitchRole: (r: RoleKey) => void; onOpenAIChat?: () => void; onOpenModule?: (k: string) => void }) {
+export function TopBar({ role, onSwitchRole, onOpenAIChat, onOpenModule, allowedRoles }: { role: RoleConfig; onSwitchRole: (r: RoleKey) => void; onOpenAIChat?: () => void; onOpenModule?: (k: string) => void; allowedRoles?: RoleKey[] }) {
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
   const searchRef = useRef<HTMLInputElement>(null);
@@ -127,14 +127,15 @@ export function TopBar({ role, onSwitchRole, onOpenAIChat, onOpenModule }: { rol
         onClick={() => notifyPending("No new notifications", "Alerts appear here as soon as your notification service is connected.")}
       />
 
-      <ProfileMenu role={role} onSwitchRole={onSwitchRole} />
+      <ProfileMenu role={role} onSwitchRole={onSwitchRole} allowedRoles={allowedRoles} />
 
 
     </header>
   );
 }
 
-function ProfileMenu({ role, onSwitchRole }: { role: RoleConfig; onSwitchRole: (r: RoleKey) => void }) {
+function ProfileMenu({ role, onSwitchRole, allowedRoles }: { role: RoleConfig; onSwitchRole: (r: RoleKey) => void; allowedRoles?: RoleKey[] }) {
+  const roleOptions = allowedRoles && allowedRoles.length ? allowedRoles : ROLE_ORDER;
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [showRoles, setShowRoles] = useState(false);
@@ -197,7 +198,7 @@ function ProfileMenu({ role, onSwitchRole }: { role: RoleConfig; onSwitchRole: (
                 <button className="text-[11px] text-muted-foreground hover:text-foreground" onClick={() => setShowRoles(false)}>Back</button>
               </div>
               <div className="max-h-72 overflow-y-auto scrollbar-thin">
-                {ROLE_ORDER.map((k) => {
+                {roleOptions.map((k) => {
                   const r = ROLES[k];
                   const active = k === role.key;
                   return (
